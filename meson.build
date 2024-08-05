@@ -34,8 +34,20 @@ active_user_dependencies = [
 
 active_user_soversion = 1
 
+awinic_detect_source_files = [
+  'src/awinic_detect.c',
+]
+
+awinic_detect_dependencies = [
+  cc.find_library('libi2c', required : true)
+]
+
 clevo_amp_control_source_files = [
   'src/clevo_amp_control.c',
+]
+
+evdev_keepalive_source_files = [
+  'src/evdev_keepalive.c',
 ]
 
 notify_wrapper_source_files = [
@@ -103,9 +115,22 @@ active_user = shared_library(
   gnu_symbol_visibility : 'hidden',
 )
 
+awinic_detect = executable(
+  'awinic_detect',
+  awinic_detect_source_files,
+  dependencies : awinic_detect_dependencies,
+  install : true,
+)
+
 clevo_amp_control = executable(
   'clevo_amp_control',
   clevo_amp_control_source_files,
+  install : true,
+)
+
+evdev_keepalive = executable(
+  'evdev_keepalive',
+  evdev_keepalive_source_files,
   install : true,
 )
 

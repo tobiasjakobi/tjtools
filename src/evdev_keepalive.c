@@ -1,6 +1,4 @@
-/*
- * gcc -Wall -O2 -o evdev_keepalive evdev_keepalive.c
- */
+// SPDX-License-Identifier: GPL-2.0
 
 #include <stdio.h>
 

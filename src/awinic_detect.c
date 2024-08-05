@@ -1,6 +1,4 @@
-/**
- * gcc -o awinic_detect awinic_detect.c
- */
+// SPDX-License-Identifier: GPL-2.0
 
 #include <i2c/smbus.h>
 #include <linux/i2c-dev.h>
