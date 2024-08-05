@@ -7,7 +7,9 @@
 #include <string.h>
 #include <unistd.h>
 
-static void null_action(int signal, siginfo_t *info, void *data) {
+#define UNUSED __attribute__ ((unused))
+
+static void null_action(UNUSED int signal, UNUSED siginfo_t *info, UNUSED void *data) {
     /* Nothing here. */
 }
 

@@ -8,12 +8,14 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define UNUSED __attribute__ ((unused))
+
 static const unsigned adapter_nr = 1;
 static const uint8_t devices_addresses[2] = {0x58, 0x5b};
 static const uint8_t idcode_register = 0x0;
 static const unsigned device_index = 0;
 
-int main(int argc, char *argv[]) {
+int main(UNUSED int argc, UNUSED char *argv[]) {
     int fd;
     int ret;
     char filename[20];

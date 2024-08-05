@@ -63,7 +63,7 @@ bool parse(string::const_iterator& pos, const string::const_iterator end, char& 
   return false;
 }
 
-int main(int argc, char* argv[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
   string line, line_out;
 
   while (true) {
