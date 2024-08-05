@@ -1,6 +1,4 @@
-/*
- * g++ -lboost_program_options -O2 -o cpu_powerlimit cpu_powerlimit.cpp
- */
+// SPDX-License-Identifier: GPL-2.0
 
 #include <csignal>
 #include <filesystem>

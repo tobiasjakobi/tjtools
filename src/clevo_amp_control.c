@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0
+
 /*
  * Based on the Python tool init-headphone-ubuntu
  *
@@ -323,12 +325,13 @@ open_amplifier()
             continue;
 
         len = read(fd, buffer, sizeof(buffer));
+        if (len >= 0) {
+            if ((size_t)len > strlen(identifier))
+                len = strlen(identifier);
 
-        if (len > strlen(identifier))
-            len = strlen(identifier);
-
-        if (strncmp(identifier, buffer, len) == 0)
-            found = true;
+            if (strncmp(identifier, buffer, len) == 0)
+                found = true;
+        }
 
         close(fd);
 

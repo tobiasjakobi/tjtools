@@ -1,23 +1,23 @@
+// SPDX-License-Identifier: GPL-2.0
+
 #include <iostream>
 #include <string>
 
-using namespace std;
-
-int main(int argc, char* argv[]) {
-  string line, line_out;
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
+  std::string line, line_out;
   bool line_begin, word_begin;
 
   while (true) {
-    getline(cin, line);
+    std::getline(std::cin, line);
 
-    if (!cin)
+    if (!std::cin)
       break;
 
     line_begin = true;
     word_begin = false;
     line_out.clear();
 
-    for (string::const_iterator i = line.begin(); i != line.end(); ++i) {
+    for (auto i = line.cbegin(); i != line.cend(); ++i) {
       if (line_begin) {
         line_out.push_back(*i);
         line_begin = false;
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
         line_out.push_back(*i);
     }
 
-    cout << line_out << endl;
+    std::cout << line_out << std::endl;
   }
 
   return 0;

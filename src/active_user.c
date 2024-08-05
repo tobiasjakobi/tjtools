@@ -1,6 +1,4 @@
-/*
- * gcc -shared -Wl,-soname,libactive_user.so.1 -lsystemd -O2 -fPIC -o libactive_user.so.1.0.0 active_user.c
- */
+// SPDX-License-Identifier: GPL-2.0
 
 #include <systemd/sd-login.h>
 
@@ -10,7 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-int get_active_user(uint32_t *user_id) {
+#if !defined(TJTOOLS_PUBLIC)
+#define TJTOOLS_PUBLIC
+#endif
+
+TJTOOLS_PUBLIC int get_active_user(uint32_t *user_id) {
     int ret;
     char **sessions = NULL;
     unsigned num_sessions;
@@ -25,8 +27,6 @@ int get_active_user(uint32_t *user_id) {
     }
 
     num_sessions = ret;
-
-    unsigned session_id;
 
     for (unsigned i = 0; i < num_sessions; ++i) {
         const char *session = sessions[i];

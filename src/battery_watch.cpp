@@ -1,6 +1,4 @@
-/*
- * g++ -ludev -lboost_program_options -O2 -o battery_watch battery_watch.cpp
- */
+// SPDX-License-Identifier: GPL-2.0
 
 #include <charconv>
 #include <filesystem>

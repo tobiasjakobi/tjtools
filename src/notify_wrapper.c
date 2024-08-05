@@ -1,6 +1,4 @@
-/*
- * gcc -lsystemd -O2 -o notify_wrapper notify_wrapper.c
- */
+// SPDX-License-Identifier: GPL-2.0
 
 #include <systemd/sd-login.h>
 #include <unistd.h>
@@ -66,11 +64,8 @@ int main(int argc, char *argv[]) {
     num_sessions = ret;
 
     bool euid_found = false;
-    unsigned session_id;
 
     for (unsigned i = 0; i < num_sessions; ++i) {
-        session_id = atoi(sessions[i]);
-
         uid_t session_uid;
         ret = sd_session_get_uid(sessions[i], &session_uid);
         if (ret < 0) {
