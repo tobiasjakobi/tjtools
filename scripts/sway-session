@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: GPL-2.0
+
+function sway_session {
+  local drm_node
+  local env_kv
+
+  source /etc/sway/wayland-environment
+
+  drm_node="${GPU_INTEGRATED_DRM_NODE}"
+
+  # Let Sway/wlroots only use the integrated GPU if possible.
+  if [[ -n "${drm_node}" ]]; then
+    env_kv="WLR_DRM_DEVICES=${drm_node}"
+  fi
+
+  if [[ -e ${HOME}/.environment ]]; then
+    source ${HOME}/.environment
+  fi
+
+  env XDG_CURRENT_DESKTOP=sway \
+      XDG_SESSION_DESKTOP=sway \
+      XDG_SESSION_TYPE=wayland \
+      ${env_kv} -- \
+      /usr/bin/systemd-cat --identifier=sway /usr/bin/sway "$@"
+}
+
+sway_session "$@"

@@ -11,6 +11,9 @@ project(
 cc = meson.get_compiler('c')
 dep_dl = cc.find_library('dl', required : true)
 
+install_prefix = get_option('prefix')
+install_bindir = get_option('bindir')
+
 
 ## Source files and dependencies
 
@@ -166,3 +169,24 @@ urlparse = executable(
   urlparse_source_files,
   install : true,
 )
+
+install_data(
+  'scripts/fstrim_gen_env.sh',
+  install_mode : 'rwxr-xr-x',
+  install_dir : install_prefix / install_bindir
+)
+
+scripts = [
+  'fstrim_gen_env.sh',
+  'gamescope-session',
+  'greetd-session',
+  'sway-session',
+]
+
+foreach s : scripts
+  install_data(
+    'scripts' / s,
+    install_mode : 'rwxr-xr-x',
+    install_dir : install_prefix / install_bindir
+  )
+endforeach

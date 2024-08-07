@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: GPL-2.0
+
+function gamescope_session {
+  local vk_device
+  local gamescope_args
+
+  source /etc/sway/wayland-environment
+
+  vk_device="${GPU_INTEGRATED_VK_DEV}"
+
+  # Let GameScope only use the integrated GPU if possible.
+  if [[ -n "${vk_device}" ]]; then
+    gamescope_args="--prefer-vk-device=${vk_device}"
+  fi
+
+  if [[ -e ${HOME}/.environment ]]; then
+    source ${HOME}/.environment
+  fi
+
+  /usr/bin/systemd-cat --identifier=gamescope /usr/bin/gamescope ${gamescope_args} \
+    -- /usr/bin/kitty --override linux_display_server=x11 "$@"
+}
+
+gamescope_session "$@"

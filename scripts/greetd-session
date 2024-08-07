@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: GPL-2.0
+
+function greetd_session {
+  local drm_node
+  local env_kv
+
+  source /etc/sway/wayland-environment
+
+  drm_node="${GPU_INTEGRATED_DRM_NODE}"
+
+  # Let Sway/wlroots only use the integrated GPU if possible.
+  if [[ -n "${drm_node}" ]]; then
+    env_kv="WLR_DRM_DEVICES=${drm_node}"
+  fi
+
+  env ${env_kv} -- sway --config /etc/greetd/sway-config
+}
+
+greetd_session "$@"
