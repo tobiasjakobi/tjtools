@@ -177,9 +177,12 @@ install_data(
 )
 
 scripts = [
+  '7z_simple.sh',
   'fstrim_gen_env.sh',
   'gamescope-session',
   'greetd-session',
+  'iscsi_ctrl.sh',
+  'resume_wrapper.sh',
   'sway-session',
 ]
 
