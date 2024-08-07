@@ -22,7 +22,7 @@ function sway_session {
   env XDG_CURRENT_DESKTOP=sway \
       XDG_SESSION_DESKTOP=sway \
       XDG_SESSION_TYPE=wayland \
-      ${env_kv} -- \
+      ${env_kv} \
       /usr/bin/systemd-cat --identifier=sway /usr/bin/sway "$@"
 }
 
