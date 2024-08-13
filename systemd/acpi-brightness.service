@@ -1,0 +1,12 @@
+[Unit]
+Description=Saving and restoring of display brightness
+After=basic.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/brightness.py --restore
+ExecStop=/usr/local/bin/brightness.py --save
+
+[Install]
+WantedBy=multi-user.target

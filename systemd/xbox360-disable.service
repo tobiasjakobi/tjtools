@@ -1,0 +1,10 @@
+[Unit]
+Description=Disable the Xbox360 controller by disabling the USB port
+StopWhenUnneeded=true
+
+[Service]
+EnvironmentFile=/etc/xbox360-controller.conf
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=sysfs_write.sh bus/usb/devices/${XBOX360_CONTROLLER_USB_PORT}/disable 1
+ExecStop=sysfs_write.sh bus/usb/devices/${XBOX360_CONTROLLER_USB_PORT}/disable 0

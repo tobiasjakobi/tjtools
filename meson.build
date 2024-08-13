@@ -14,6 +14,9 @@ dep_dl = cc.find_library('dl', required : true)
 install_prefix = get_option('prefix')
 install_bindir = get_option('bindir')
 
+systemd = dependency('systemd')
+systemd_system_unit_dir = systemd.get_variable('systemdsystemunitdir')
+
 
 ## Source files and dependencies
 
@@ -84,6 +87,19 @@ upper_sanitize_source_files = [
 
 urlparse_source_files = [
   'src/urlparse.cpp',
+]
+
+
+## systemd unit files
+
+unit_files = [
+  'acpi-brightness.service',
+  'battery-watch.service',
+  'cpu-powerlimit@.service',
+  'iscsi-ctrl@.service',
+  'razer-config@.service',
+  'xbox360-config@.service',
+  'xbox360-disable.service',
 ]
 
 
@@ -191,5 +207,15 @@ foreach s : scripts
     'scripts' / s,
     install_mode : 'rwxr-xr-x',
     install_dir : install_prefix / install_bindir
+  )
+endforeach
+
+foreach u : unit_files
+  configure_file(
+    input: 'systemd' / u,
+    output: '@BASENAME@',
+    configuration: conf,
+    install: true,
+    install_dir: systemd_system_unit_dir,
   )
 endforeach

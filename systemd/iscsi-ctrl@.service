@@ -1,0 +1,17 @@
+[Unit]
+Description=Control of iSCSI device %i
+Documentation=man:iscsiadm(8) man:iscsid(8)
+Before=remote-fs.target
+After=network-online.target iscsid.service
+Requires=iscsid.socket iscsi-init.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=iscsi_ctrl.sh %i --login --no_wait
+ExecStop=iscsi_ctrl.sh %i --logout
+SuccessExitStatus=21 15
+RemainAfterExit=true
+
+[Install]
+WantedBy=remote-fs.target

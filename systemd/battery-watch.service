@@ -1,0 +1,10 @@
+[Unit]
+Description=Battery level watch daemon
+After=basic.target
+
+[Service]
+# Use an interval of 30 seconds, BAT0 as monitoring device and a treshold of 15 percent.
+ExecStart=battery_watch --interval=30 --device=BAT0 --treshold=15
+
+[Install]
+WantedBy=multi-user.target

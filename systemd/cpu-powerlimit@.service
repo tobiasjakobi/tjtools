@@ -1,0 +1,5 @@
+[Unit]
+Description=Set CPU powerlimit to profile %i
+
+[Service]
+ExecStart=cpu_powerlimit --profile=%i
