@@ -37,7 +37,7 @@ function gamescope_session {
   fi
 
   # Let GameScope use the additional arguments.
-  additional_args="{GAMESCOPE_ADDITIONAL_ARGS}"
+  additional_args="${GAMESCOPE_ADDITIONAL_ARGS}"
   if [[ -n "${additional_args}" ]]; then
     gamescope_args+=("${additional_args}")
   fi
