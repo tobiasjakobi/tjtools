@@ -196,12 +196,17 @@ install_data(
 
 scripts = [
   '7z_simple.sh',
+  'detect_display.sh',
   'fstrim_gen_env.sh',
   'gamescope-session',
   'greetd-session',
   'iscsi_ctrl.sh',
   'resume_wrapper.sh',
+  'session_helper.sh',
+  'steam-gamepadui-session',
+  'steamos-session-select',
   'sway-session',
+  'sysfs_write.sh',
 ]
 
 foreach s : scripts
