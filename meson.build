@@ -17,6 +17,8 @@ install_bindir = get_option('bindir')
 systemd = dependency('systemd')
 systemd_system_unit_dir = systemd.get_variable('systemdsystemunitdir')
 
+conf = configuration_data()
+
 
 ## Source files and dependencies
 
