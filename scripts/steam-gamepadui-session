@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: GPL-2.0
+
+function steam_gamepadui_session {
+  local vk_device
+  local preferred_output
+  local preferred_width
+  local preferred_height
+  local additional_args
+  local gamescope_args=()
+
+  source /etc/sway/wayland-environment
+
+  # Let GameScope only use the integrated GPU if possible.
+  vk_device="${GPU_INTEGRATED_VK_DEV}"
+  if [[ -n "${vk_device}" ]]; then
+    gamescope_args+=("--prefer-vk-device=${vk_device}")
+  fi
+
+  # Let GameScope use the preferred output.
+  preferred_output="{GAMESCOPE_PREFERRED_OUTPUT}"
+  if [[ -n "${preferred_output}" ]]; then
+    gamescope_args+=("--prefer-output=${preferred_output}")
+  fi
+
+  # Let GameScope use the preferred width.
+  preferred_width="${GAMESCOPE_PREFERRED_WIDTH}"
+  if [[ -n "${preferred_width}" ]]; then
+    gamescope_args+=("--output-width=${preferred_width}")
+  fi
+
+  # Let GameScope use the preferred height.
+  preferred_height="${GAMESCOPE_PREFERRED_HEIGHT}"
+  if [[ -n "${preferred_height}" ]]; then
+    gamescope_args+=("--output-height=${preferred_height}")
+  fi
+
+  # Let GameScope use the additional arguments.
+  additional_args="{GAMESCOPE_ADDITIONAL_ARGS}"
+  if [[ -n "${additional_args}" ]]; then
+    gamescope_args+=("${additional_args}")
+  fi
+
+  if [[ -f ${HOME}/.environment ]]; then
+    source ${HOME}/.environment
+  fi
+
+  if [[ -f ${HOME}/.gamescope.environment ]]; then
+    source ${HOME}/.gamescope.environment
+  fi
+
+  # Disable portals if we're in a Steam session.
+  systemctl --user set-environment XDG_DESKTOP_PORTAL_DIR=""
+
+  systemd-cat --identifier=steam-gamepadui gamescope --steam --mangoapp ${gamescope_args[*]} \
+    -- session_helper.sh --steam-gamepadui "$@"
+}
+
+steam_gamepadui_session "$@"

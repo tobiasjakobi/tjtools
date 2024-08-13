@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: GPL-2.0
+
+function steamos_session_select {
+  session_helper.sh --steam-shutdown
+}
+
+steamos_session_select "$@"
