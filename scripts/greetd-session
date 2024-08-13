@@ -15,7 +15,7 @@ function greetd_session {
     env_kv="WLR_DRM_DEVICES=${drm_node}"
   fi
 
-  env ${env_kv} sway --config /etc/greetd/sway-config
+  systemd-cat --identifier=greetd-sway env ${env_kv} sway --config /etc/greetd/sway-config
 }
 
 greetd_session "$@"
