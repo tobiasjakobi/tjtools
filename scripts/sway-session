@@ -15,7 +15,7 @@ function sway_session {
     env_kv="WLR_DRM_DEVICES=${drm_node}"
   fi
 
-  if [[ -e ${HOME}/.environment ]]; then
+  if [[ -f ${HOME}/.environment ]]; then
     source ${HOME}/.environment
   fi
 
@@ -23,7 +23,7 @@ function sway_session {
       XDG_SESSION_DESKTOP=sway \
       XDG_SESSION_TYPE=wayland \
       ${env_kv} \
-      /usr/bin/systemd-cat --identifier=sway /usr/bin/sway "$@"
+      systemd-cat --identifier=sway sway "$@"
 }
 
 sway_session "$@"
