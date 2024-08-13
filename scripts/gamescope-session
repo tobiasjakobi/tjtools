@@ -4,7 +4,9 @@
 
 function gamescope_session {
   local vk_device
-  local gamescope_args
+  local preferred_output
+  local additional_args
+  local gamescope_args=()
 
   source /etc/sway/wayland-environment
 
@@ -12,15 +14,36 @@ function gamescope_session {
 
   # Let GameScope only use the integrated GPU if possible.
   if [[ -n "${vk_device}" ]]; then
-    gamescope_args="--prefer-vk-device=${vk_device}"
+    gamescope_args+=("--prefer-vk-device=${vk_device}")
   fi
 
-  if [[ -e ${HOME}/.environment ]]; then
+  preferred_output="{GAMESCOPE_PREFERRED_OUTPUT}"
+
+  # Let GameScope use the preferred output.
+  if [[ -n "${preferred_output}" ]]; then
+    gamescope_args+=("--prefer-output=${preferred_output}")
+  fi
+
+  additional_args="{GAMESCOPE_ADDITIONAL_ARGS}"
+
+  # Let GameScope use the preferred output.
+  if [[ -n "${additional_args}" ]]; then
+    gamescope_args+=("${additional_args}")
+  fi
+
+  if [[ -f ${HOME}/.environment ]]; then
     source ${HOME}/.environment
   fi
 
-  /usr/bin/systemd-cat --identifier=gamescope /usr/bin/gamescope ${gamescope_args} \
-    -- /usr/bin/kitty --override linux_display_server=x11 "$@"
+  if [[ -f ${HOME}/.gamescope.environment ]]; then
+    source ${HOME}/.gamescope.environment
+  fi
+
+  # Disable portals if we're in a Gamescope session.
+  systemctl --user set-environment XDG_DESKTOP_PORTAL_DIR=""
+
+  systemd-cat --identifier=gamescope gamescope ${gamescope_args[*]} \
+    -- /usr/local/bin/session_helper.sh --kitty "$@"
 }
 
 gamescope_session "$@"
