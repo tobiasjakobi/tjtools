@@ -8,7 +8,7 @@ function detect_display {
 
   source /etc/sway/wayland-environment
 
-  preferred_output="{GAMESCOPE_PREFERRED_OUTPUT}"
+  preferred_output="${GAMESCOPE_PREFERRED_OUTPUT}"
 
   if [[ -n "${preferred_output}" ]]; then
     dp_status="/sys/class/drm/card0-${preferred_output}/status"
