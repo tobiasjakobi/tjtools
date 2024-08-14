@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: GPL-2.0
+
+function steamos_select_branch {
+  logger "info: SteamOS select branch called: $@"
+
+  return 0
+}
+
+steamos_select_branch "$@"
