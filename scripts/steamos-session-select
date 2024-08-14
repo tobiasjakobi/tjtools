@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: GPL-2.0
 
 function steamos_session_select {
+  logger "info: SteamOS session select called: $@"
+
   session_helper.sh --steam-shutdown
 }
 
