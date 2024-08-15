@@ -3,4 +3,4 @@ Description=Razer DeathAdder V2 configuration on %I
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/razer_config.py %i
+ExecStart=razer_config %i
