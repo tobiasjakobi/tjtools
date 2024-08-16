@@ -17,6 +17,9 @@ install_bindir = get_option('bindir')
 systemd = dependency('systemd')
 systemd_system_unit_dir = systemd.get_variable('systemdsystemunitdir')
 
+udev = dependency('udev')
+udev_rules_dir = udev.get_variable('udev_dir') / 'rules.d'
+
 conf = configuration_data()
 
 
@@ -102,6 +105,18 @@ unit_files = [
   'razer-config@.service',
   'xbox360-config@.service',
   'xbox360-disable.service',
+]
+
+
+## UDev rules
+
+udev_rules = [
+  '10-external-input.rules',
+  '11-razer-mouse.rules',
+  '51-rfkill.rules',
+  '61-optical-drives.rules',
+  '70-gamepad-controller.rules',
+  '80-docked-mode.rules',
 ]
 
 
@@ -222,5 +237,13 @@ foreach u : unit_files
     'systemd' / u,
     install_mode : 'rw-r--r--',
     install_dir : systemd_system_unit_dir,
+  )
+endforeach
+
+foreach r : udev_rules
+  install_data(
+    'udev' / r,
+    install_mode : 'rw-r--r--',
+    install_dir : udev_rules_dir,
   )
 endforeach
