@@ -5,8 +5,8 @@ After=basic.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/bin/brightness.py --restore
-ExecStop=/usr/local/bin/brightness.py --save
+ExecStart=python3 -m tjtools.brightness --restore
+ExecStop=python3 -m tjtools.brightness --save
 
 [Install]
 WantedBy=multi-user.target
