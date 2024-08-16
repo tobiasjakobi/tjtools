@@ -1,0 +1,2 @@
+# Allow plugdev to change rfkill states.
+KERNEL=="rfkill", GROUP="plugdev"

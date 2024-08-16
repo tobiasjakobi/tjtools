@@ -1,0 +1,7 @@
+ACTION=="remove", GOTO="external_input_end"
+
+# Add tag to devices on external USB busses.
+KERNEL=="event[0-9]*", SUBSYSTEM=="input", SUBSYSTEMS=="usb", ATTRS{physical_location/horizontal_position}=="center", ATTRS{busnum}=="7|8", TAG+="external-device"
+KERNEL=="event[0-9]*", SUBSYSTEM=="input", SUBSYSTEMS=="usb", ATTRS{physical_location/horizontal_position}=="center", ATTRS{busnum}=="1", ATTRS{devpath}=="2", TAG+="external-device"
+
+LABEL="external_input_end"

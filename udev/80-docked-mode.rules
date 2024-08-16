@@ -1,0 +1,2 @@
+# Disable the Ayaneo integrated Xbox360 controller when in docked mode.
+SUBSYSTEM=="usb", DRIVER=="usb", ATTR{bDeviceClass}=="09", ATTR{idVendor}=="2109", ATTR{idProduct}=="2824", ATTR{serial}=="000000001", TAG+="systemd", ENV{SYSTEMD_WANTS}="xbox360-disable.service"

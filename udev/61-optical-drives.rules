@@ -1,0 +1,18 @@
+ACTION=="remove", GOTO="optical_drives_end"
+
+# Create symlinks for local optical drives:
+# - external Samsung SN-506BB (BluRay, SlimLine)
+# - virtual CDEmu drive
+SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="TSSTcorp", ATTRS{model}=="BDDVDW SN-506BB", ATTRS{rev}=="SB00", SYMLINK+="optical/samsung"
+SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="CDEmu", ATTRS{model}=="CD-ROM", ATTRS{rev}=="1.0", SYMLINK+="optical/virt"
+
+# Create symlinks for remote optical drives:
+# - Pioneer BDR-212EBK (BluRay) @ audioserver (iSCSI)
+# - Hitachi WH16NS60 (BluRay) @ audioserver (iSCSI)
+SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="PIONEER", ATTRS{model}=="BD-RW   BDR-212M", ATTRS{rev}=="1.02", SYMLINK+="optical/aserverp"
+SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="HL-DT-ST", ATTRS{model}=="BD-RE  WH16NS60", ATTRS{rev}=="1.03", SYMLINK+="optical/aserverh"
+
+LABEL="optical_drives_end"
+
+# Speed reduction on media change (all drives)
+ACTION=="change", KERNEL=="sr?", ENV{DISK_MEDIA_CHANGE}=="1", RUN+="hdparm -E 4 /dev/%k"

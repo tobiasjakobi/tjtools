@@ -1,0 +1,26 @@
+# Raw HID access to:
+# - Sony PS5 DualSense controller
+# - Sony PS3 controller
+# - Xbox Elite Wireless Controller 2
+SUBSYSTEM=="hidraw", SUBSYSTEMS=="hid", DRIVERS=="playstation", GROUP="plugdev"
+SUBSYSTEM=="hidraw", SUBSYSTEMS=="hid", DRIVERS=="sony", GROUP="plugdev"
+SUBSYSTEM=="hidraw", SUBSYSTEMS=="hid", DRIVERS=="xpadneo", KERNELS=="0005:045E:0B22.*", GROUP="plugdev"
+
+# evdev access to:
+# - Xbox Elite Wireless Controller 2
+# - Ayaneo integrated Xbox360 controller
+KERNEL=="event[0-9]*", ATTRS{phys}=="a8:7e:ea:b2:68:75", GROUP="plugdev"
+KERNEL=="event[0-9]*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="028e", GROUP="plugdev"
+
+# Enable Steam to spawn virtual Steam Input controllers.
+#
+# See this for reference:
+# - https://wiki.gentoo.org/wiki/Steam_Controller
+# - https://github.com/ValveSoftware/steam-devices/tree/master
+KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", TAG+="udev-acl"
+
+# Quirks for Ayaneo integrated Xbox360 controller:
+# - don't perform MTP probing
+# - enable keepalive to prevent controller watchdog
+SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="028e", ENV{MTP_NO_PROBE}="1"
+ACTION=="add", KERNEL=="event[0-9]*", SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="028e", ATTRS{manufacturer}=="ZhiXu", ATTRS{product}=="Controller", TAG+="systemd", ENV{SYSTEMD_WANTS}="xbox360-config@$kernel.service"
