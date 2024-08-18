@@ -54,7 +54,7 @@ namespace BrightnessDaemon {
             const auto config_data = jsn::parse(config_file);
 
             if (config_data.contains("user"sv)) {
-                config_data.at("usersv").get_to(user);
+                config_data.at("user"sv).get_to(user);
             }
 
             if (config_data.contains("group"sv)) {
