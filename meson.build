@@ -50,7 +50,16 @@ awinic_detect_source_files = [
 ]
 
 awinic_detect_dependencies = [
-  cc.find_library('libi2c', required : true)
+  cc.find_library('libi2c', required : true),
+]
+
+brightness_daemon_source_files = [
+  'src/brightness_utils/common.cpp',
+  'src/brightness_daemon.cpp',
+]
+
+brightness_daemon_dependencies = [
+  dependency('libsystemd'),
 ]
 
 clevo_amp_control_source_files = [
@@ -155,6 +164,13 @@ awinic_detect = executable(
   'awinic_detect',
   awinic_detect_source_files,
   dependencies : awinic_detect_dependencies,
+  install : true,
+)
+
+brightness_daemon = executable(
+  'brightness_daemon',
+  brightness_daemon_source_files,
+  dependencies : brightness_daemon_dependencies,
   install : true,
 )
 
