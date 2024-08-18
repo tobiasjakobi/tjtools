@@ -8,9 +8,12 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <systemd/sd-journal.h>
+#include <unistd.h>
 
 #include <array>
+#include <cerrno>
 #include <cstdint>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -209,6 +212,15 @@ namespace BrightnessDaemon {
 
             sock_.open();
             sock_.bind(ep_);
+
+            if (!cfg_.user.empty()) {
+                const auto info = get_uid_gid(cfg_.user.data(), cfg_.group.data());
+
+                const auto ret = ::fchown(sock_.lowest_layer().native_handle(), info.first, info.second);
+                if (ret != 0) {
+                    throw std::runtime_error{std::string{"fchown() failed: "} + std::strerror(errno)};
+                }
+            }
         }
 
         void start(BacklightContext &bl_ctx, bool verbose) {

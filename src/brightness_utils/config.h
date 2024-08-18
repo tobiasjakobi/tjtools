@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <string_view>
 #include <string>
 #include <system_error>
 
@@ -24,6 +25,8 @@ namespace BrightnessDaemon {
     namespace fs = std::filesystem;
 
     using jsn = nlohmann::json;
+
+    using namespace std::string_view_literals;
 
     struct Config {
         std::string user;
@@ -50,8 +53,13 @@ namespace BrightnessDaemon {
 
             const auto config_data = jsn::parse(config_file);
 
-            config_data.at("user").get_to(user);
-            config_data.at("group").get_to(group);
+            if (config_data.contains("user"sv)) {
+                config_data.at("usersv").get_to(user);
+            }
+
+            if (config_data.contains("group"sv)) {
+                config_data.at("group"sv).get_to(group);
+            }
 
             identifier.parse(config_data.at("backlight-identifier"));
 

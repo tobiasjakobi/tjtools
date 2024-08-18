@@ -4,7 +4,6 @@
 
 #include <unistd.h>
 
-#include <sys/types.h>
 #include <grp.h>
 #include <pwd.h>
 
@@ -14,6 +13,47 @@
 namespace BrightnessDaemon {
 
     using jsn = nlohmann::json;
+
+    UGID get_uid_gid(const char *username, const char *groupname) {
+        ::group *grp{nullptr};
+
+        if (groupname != nullptr) {
+            grp = ::getgrnam(groupname);
+            if (grp == nullptr) {
+                throw std::runtime_error{"failed to find group"};
+            }
+        }
+
+        ::passwd *pwd{nullptr};
+
+        if (username == nullptr) {
+            throw std::runtime_error{"invalid username"};
+        }
+
+        pwd = ::getpwnam(username);
+        if (pwd == nullptr) {
+            throw std::runtime_error{"failed to find user"};
+        }
+
+        if (grp == nullptr) {
+            grp = ::getgrgid(pwd->pw_gid);
+            if (grp == nullptr) {
+                throw std::runtime_error{"failed to find group of user"};
+            }
+        }
+
+        UGID ret;
+
+        if (grp != nullptr) {
+            ret.second = grp->gr_gid;
+        }
+
+        if (pwd != nullptr) {
+            ret.first = pwd->pw_uid;
+        }
+
+        return ret;
+    }
 
     void drop_root_privileges(const char *username, const char *groupname) {
         auto uid = ::getuid();
@@ -34,21 +74,23 @@ namespace BrightnessDaemon {
 
         ::passwd *pwd{nullptr};
 
-        if (username != nullptr) {
-            pwd = ::getpwnam(username);
-            if (pwd == nullptr) {
-                throw std::runtime_error{"failed to find user"};
-            }
+        if (username == nullptr) {
+            throw std::runtime_error{"invalid username"};
+        }
 
-            if (pwd->pw_uid == 0) {
-                throw std::runtime_error{"bogus user"};
-            }
+        pwd = ::getpwnam(username);
+        if (pwd == nullptr) {
+            throw std::runtime_error{"failed to find user"};
+        }
 
+        if (pwd->pw_uid == 0) {
+            throw std::runtime_error{"bogus user"};
+        }
+
+        if (grp == nullptr) {
+            grp = ::getgrgid(pwd->pw_gid);
             if (grp == nullptr) {
-                grp = ::getgrgid(pwd->pw_gid);
-                if (grp == nullptr) {
-                    throw std::runtime_error{"failed to find group of user"};
-                }
+                throw std::runtime_error{"failed to find group of user"};
             }
         }
 
