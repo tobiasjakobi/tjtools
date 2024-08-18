@@ -10,6 +10,15 @@
 
 namespace BrightnessDaemon {
 
+    /**
+     * Drop root privileges.
+     * 
+     * @param username  Username to become
+     * @param groupname Groupname to become
+     *
+     * If the current user is root, then drop these privileges and
+     * become the given user/group.
+     */
     void drop_root_privileges(const char *username, const char *groupname);
 
     struct BacklightIdentifier {
