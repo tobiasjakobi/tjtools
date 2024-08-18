@@ -14,6 +14,7 @@
 #include <cerrno>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -44,6 +45,7 @@ namespace detail {
 namespace BrightnessDaemon {
 
     namespace as = boost::asio;
+    namespace fs = std::filesystem;
 
     using proto = as::local::datagram_protocol;
 
@@ -214,9 +216,13 @@ namespace BrightnessDaemon {
             sock_.bind(ep_);
 
             if (!cfg_.user.empty()) {
+                using fs::perms;
+
                 const auto info = get_uid_gid(cfg_.user.data(), cfg_.group.data());
 
-                const auto ret = ::fchown(sock_.lowest_layer().native_handle(), info.first, info.second);
+                fs::permissions(cfg_.socket_path, perms::owner_all | perms::group_all);
+
+                const auto ret = ::chown(cfg_.socket_path.string().data(), info.first, info.second);
                 if (ret != 0) {
                     throw std::runtime_error{std::string{"fchown() failed: "} + std::strerror(errno)};
                 }
