@@ -1,5 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0
 
+#define BOOST_PROCESS_USE_STD_FS
+
+#include <boost/interprocess/sync/file_lock.hpp>
+#include <boost/process/child.hpp>
+#include <boost/process/io.hpp>
+#include <boost/program_options.hpp>
+#include <nlohmann/json.hpp>
+#include <unistd.h>
+
 #include <csignal>
 #include <filesystem>
 #include <fstream>
@@ -10,16 +19,6 @@
 #include <system_error>
 #include <utility>
 #include <vector>
-
-#define BOOST_PROCESS_USE_STD_FS
-
-#include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/process/child.hpp>
-#include <boost/process/io.hpp>
-#include <boost/program_options.hpp>
-#include <nlohmann/json.hpp>
-
-#include <unistd.h>
 
 namespace CPUPowerlimit {
 
