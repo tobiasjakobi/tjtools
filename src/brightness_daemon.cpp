@@ -127,7 +127,7 @@ namespace BrightnessDaemon {
                 tmp = 0;
             }
 
-            if (tmp > max_brightness_) {
+            if (tmp > static_cast<int>(max_brightness_)) {
                 tmp = max_brightness_;
             }
 
@@ -326,7 +326,7 @@ namespace BrightnessDaemon {
 
 } // namespace BrightnessDaemon
 
-int main(int argc, char *argv[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     BrightnessDaemon::Config config;
 
     config.read();
