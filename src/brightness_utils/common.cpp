@@ -2,13 +2,11 @@
 
 #include "common.h"
 
-#include <unistd.h>
-
 #include <grp.h>
 #include <pwd.h>
+#include <unistd.h>
 
 #include <stdexcept>
-#include <string>
 
 namespace BrightnessDaemon {
 

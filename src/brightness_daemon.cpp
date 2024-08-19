@@ -16,7 +16,6 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <stdexcept>
 #include <string_view>
 #include <vector>
@@ -116,6 +115,11 @@ namespace BrightnessDaemon {
             sync();
 
             if (!fs::exists(cfg_.state_path)) {
+                const auto parent = cfg_.state_path.parent_path();
+                if (!fs::is_directory(parent)) {
+                    fs::create_directories(parent);
+                }
+
                 std::ofstream ofs(cfg_.state_path);
             }
 
@@ -159,6 +163,8 @@ namespace BrightnessDaemon {
 
             storage_stream_.clear();
             storage_stream_.seekg(0);
+
+            // TODO: truncate file
 
             if (!good_read) {
                 return;
@@ -209,6 +215,12 @@ namespace BrightnessDaemon {
     public:
         SocketContext(as::io_context &ioc, const Config &cfg) : ioc_(ioc), cfg_(cfg), sock_(ioc), ep_(cfg.socket_path) {}
 
+        ~SocketContext() {
+            std::error_code ec;
+
+            fs::remove(cfg_.socket_path, ec);
+        }
+
         void init() {
             fs::remove(cfg_.socket_path);
 
@@ -245,9 +257,10 @@ namespace BrightnessDaemon {
                 return;
             }
 
-            const std::string cmd_type{to_string(frame.type)};
-
             if (verbose_) {
+                // We need a null-terminated string for sd_journal.
+                const std::string cmd_type{to_string(frame.type)};
+
                 ::sd_journal_print(LOG_NOTICE, "handling command type: %s", cmd_type.data());
             }
 
@@ -363,7 +376,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
     boost::asio::signal_set signals(ioc, SIGTERM, SIGINT);
 
-    signals.async_wait([](const auto& ec, int signal_number) {
+    signals.async_wait([](const auto &ec, int signal_number) {
         if (!ec) {
             ::sd_journal_print(LOG_NOTICE, "received signal: %d", signal_number);
 
