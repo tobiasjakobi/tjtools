@@ -21,7 +21,8 @@ fi
 LICENSE="GPL-2"
 SLOT="0"
 
-RDEPEND=">=dev-libs/boost-1.85.0-r1
+RDEPEND=">=acct-user/brightness-0
+	>=dev-libs/boost-1.85.0-r1
 	>=net-misc/curl-8.8.0-r1
 	>=sys-apps/systemd-255.7-r1
 	>=virtual/libudev-251-r2"
