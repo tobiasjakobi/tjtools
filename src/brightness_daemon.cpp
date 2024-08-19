@@ -126,10 +126,25 @@ namespace BrightnessDaemon {
             storage_stream_.open(cfg_.state_path, fstream::in | fstream::out | fstream::binary);
         }
 
+        /**
+         * @brief Set the backlight brightness state.
+         *
+         * @param value The (unsigned) integer value to apply
+         *
+         * No clamping is done, and the method throws when the value is invalid.
+         */
         void setState(const unsigned value) {
             set(value);
         }
 
+        /**
+         * @brief Modify the backlight brightness state.
+         *
+         * @param value The (signed) integer value to apply
+         *
+         * Modify applies the signed integer value to the current brightness value.
+         * The final value is clamped.
+         */
         void modifyState(const int value) {
             auto tmp = static_cast<int>(current_brightness_) + value;
             if (tmp < 0) {
@@ -143,6 +158,9 @@ namespace BrightnessDaemon {
             set(static_cast<unsigned>(tmp));
         }
 
+        /**
+         * @brief Save the backlight brightness to the state storage file.
+         */
         void saveState() {
             storage_stream_.write(reinterpret_cast<const char *>(&current_brightness_), sizeof(unsigned));
             storage_stream_.flush();
@@ -154,6 +172,9 @@ namespace BrightnessDaemon {
             storage_stream_.seekp(0);
         }
 
+        /**
+         * @brief Restore the backlight brightness from the state storage file.
+         */
         void restoreState() {
             unsigned tmp;
 
@@ -177,6 +198,9 @@ namespace BrightnessDaemon {
             }
         }
 
+        /**
+         * @brief Set backlight brightness to the powersave state.
+         */
         void setPowersave() {
             set(cfg_.powersave_value);
         }
