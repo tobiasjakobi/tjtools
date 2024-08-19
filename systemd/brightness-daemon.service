@@ -1,5 +1,9 @@
 [Unit]
 Description=Display brightness control daemon
+After=basic.target
 
 [Service]
 ExecStart=brightness-daemon
+
+[Install]
+WantedBy=multi-user.target
