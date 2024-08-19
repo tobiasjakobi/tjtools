@@ -1,0 +1,5 @@
+[Unit]
+Description=Display brightness control daemon
+
+[Service]
+ExecStart=brightness-daemon
