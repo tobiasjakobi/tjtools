@@ -20,6 +20,8 @@
 #include <string_view>
 #include <vector>
 
+#include <ext/stdio_filebuf.h>
+
 namespace detail {
 
     using namespace std::string_view_literals;
@@ -88,6 +90,20 @@ namespace BrightnessDaemon {
             default:
                 throw std::runtime_error{"invalid command type"};
         }
+    }
+
+    /**
+     * GCC-specific truncate implementation.
+     *
+     * Should be replaced with a toolchain-independant version, e.g.
+     * using boost::iostreams?
+     */
+    static auto truncate(std::fstream &stream) {
+        using IOBufferType = __gnu_cxx::stdio_filebuf<char>;
+
+        auto iobuf = static_cast<IOBufferType *>(stream.rdbuf());
+
+        return iobuf->fd();
     }
 
     class BacklightContext {
@@ -185,7 +201,7 @@ namespace BrightnessDaemon {
             storage_stream_.clear();
             storage_stream_.seekg(0);
 
-            // TODO: truncate file
+            truncate(storage_stream_);
 
             if (!good_read) {
                 return;
