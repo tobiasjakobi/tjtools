@@ -107,7 +107,6 @@ urlparse_source_files = [
 ## systemd unit files
 
 unit_files = [
-  'acpi-brightness.service',
   'battery-watch.service',
   'brightness-daemon.service',
   'cpu-powerlimit@.service',
