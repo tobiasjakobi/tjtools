@@ -98,12 +98,15 @@ namespace BrightnessDaemon {
      * Should be replaced with a toolchain-independant version, e.g.
      * using boost::iostreams?
      */
-    static auto truncate(std::fstream &stream) {
+    static void truncate(std::fstream &stream, const std::size_t length) {
         using IOBufferType = __gnu_cxx::stdio_filebuf<char>;
 
         auto iobuf = static_cast<IOBufferType *>(stream.rdbuf());
 
-        return iobuf->fd();
+        const auto ret = ::ftruncate(iobuf->fd(), static_cast<::off_t>(length));
+        if (ret != 0) {
+            throw std::runtime_error{std::string{"ftruncate() failed: "} + std::strerror(errno)};
+        }
     }
 
     class BacklightContext {
@@ -201,7 +204,7 @@ namespace BrightnessDaemon {
             storage_stream_.clear();
             storage_stream_.seekg(0);
 
-            truncate(storage_stream_);
+            truncate(storage_stream_, 0);
 
             if (!good_read) {
                 return;
