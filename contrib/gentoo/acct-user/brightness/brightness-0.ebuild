@@ -7,6 +7,6 @@ inherit acct-user
 
 ACCT_USER_ID=-1
 ACCT_USER_GROUPS=( brightness users )
-DESCRIPTION="User for app-misc/tjtools"
+DESCRIPTION="User for brightness daemon from app-misc/tjtools"
 
 acct-user_add_deps
