@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 
 #include "common_utils/scope_guard.h"
-#include "common_utils/string_extra.h"
 
 #include <boost/process/child.hpp>
 #include <boost/process/io.hpp>
@@ -23,7 +22,7 @@ namespace detail {
 
     static const std::filesystem::path kConfigPath{"/etc/container.conf"};
 
-    static constexpr auto     KCryptSetup{"cryptsetup"};
+    static constexpr auto     KCryptSetup{"/usr/bin/cryptsetup"};
     static constexpr unsigned kBufferSize{128};
 
 } // namespace detail
@@ -80,9 +79,10 @@ namespace Container {
      * @brief Fetch a scp:// URL using libCURL.
      *
      * @param address The address part of the URL
+     * @param buffer  Buffer into which the URL is fetched
      * @param verbose Should we be verbose when fetching?
      */
-    static std::string scp_fetch(const std::string &address, const bool verbose) {
+    static void scp_fetch(const std::string &address, std::vector<std::uint8_t> &buffer, const bool verbose) {
         CallbackContext ctx;
         ctx.buffer.reserve(::detail::kBufferSize);
 
@@ -128,7 +128,7 @@ namespace Container {
             throw std::runtime_error{std::string{"curl_easy_perform(): "} + ::curl_easy_strerror(res)};
         }
 
-        return std::string{std::begin(ctx.buffer), std::end(ctx.buffer)};
+        buffer.swap(ctx.buffer);
     }
 
     /**
@@ -163,7 +163,8 @@ namespace Container {
         const auto path    = fs::path{cfg.remote_base} / hostname / fmt::format("key.{}", spec);
         const auto address = fmt::format("{0}@{1}/{2}", cfg.remote_user, cfg.remote_host, path.string());
 
-        const auto key_content = CommonUtils::rstrip(scp_fetch(address, false));
+        std::vector<std::uint8_t> key_content;
+        scp_fetch(address, key_content, false);
 
         const std::vector<std::string> args{
             "open",
@@ -173,7 +174,13 @@ namespace Container {
             fmt::format("container-{}", name),
         };
 
-        bp::child c(::detail::KCryptSetup, args, bp::std_err > bp::null, bp::std_in < key_content);
+        bp::opstream in_stream;
+        bp::child c(::detail::KCryptSetup, args, bp::std_err > bp::null, bp::std_in < in_stream);
+
+        in_stream.write(reinterpret_cast<const char *>(key_content.data()), key_content.size());
+
+        in_stream.flush();
+        in_stream.pipe().close();
 
         c.wait();
 
@@ -251,12 +258,18 @@ int main(int argc, char *argv[]) {
     const auto &hostname = vm["hostname"].as<std::string>();
     const auto &spec     = vm["specification"].as<std::string>();
 
-    if (mode == "open"sv) {
-        open(config, hostname, spec);
-    } else if (mode == "close"sv) {
-        close(config, spec);
-    } else {
-        std::cerr << "error: invalid operation mode: " << mode << std::endl;
+    try {
+        if (mode == "open"sv) {
+            open(config, hostname, spec);
+        } else if (mode == "close"sv) {
+            close(config, spec);
+        } else {
+            std::cerr << "error: invalid operation mode: " << mode << std::endl;
+
+            return 1;
+        }
+    } catch (const std::runtime_error &err) {
+        std::cerr << "error: error executing operation: " << err.what() << std::endl;
 
         return 1;
     }
