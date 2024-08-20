@@ -188,7 +188,7 @@ namespace Container {
      * @param cfg  The container configuraiton
      * @param spec The container specification
      */
-    static void close(const ContainerConfig &cfg, std::string_view spec) {
+    static void close([[maybe_unused]] const ContainerConfig &cfg, std::string_view spec) {
         const auto pos = spec.find('.');
         if (pos == std::string_view::npos) {
             throw std::runtime_error{"malformed spec"};
