@@ -66,6 +66,16 @@ clevo_amp_control_source_files = [
   'src/clevo_amp_control.c',
 ]
 
+container_source_files = [
+  'src/container.cpp',
+]
+
+container_dependencies = [
+  dependency('boost', modules : ['program_options']),
+  dependency('fmt'),
+  dependency('libcurl'),
+]
+
 evdev_keepalive_source_files = [
   'src/evdev_keepalive.c',
 ]
@@ -177,6 +187,13 @@ brightness_daemon = executable(
 clevo_amp_control = executable(
   'clevo_amp_control',
   clevo_amp_control_source_files,
+  install : true,
+)
+
+container = executable(
+  'container',
+  container_source_files,
+  dependencies : container_dependencies,
   install : true,
 )
 
