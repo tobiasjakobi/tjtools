@@ -4,8 +4,11 @@ After=network-online.target
 Wants=network-online.target
 StopWhenUnneeded=true
 
+# We need to provide the User= setting, otherwise systemd does
+# not set the HOME environment variable (which we require).
 [Service]
 Type=oneshot
+User=root
 ExecStart=container --mode=open --hostname=%H --specification=%i
 ExecStop=container --mode=close --hostname=%H --specification=%i
 RemainAfterExit=true
