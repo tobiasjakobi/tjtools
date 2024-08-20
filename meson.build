@@ -122,6 +122,7 @@ unit_files = [
   'cpu-powerlimit@.service',
   'iscsi-ctrl@.service',
   'razer-config@.service',
+  'unlock-container@.service',
   'xbox360-config@.service',
   'xbox360-disable.service',
 ]
