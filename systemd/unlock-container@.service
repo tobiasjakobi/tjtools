@@ -1,0 +1,11 @@
+[Unit]
+Description=Unlock encrypted container %i
+After=network-online.target
+Wants=network-online.target
+StopWhenUnneeded=true
+
+[Service]
+Type=oneshot
+ExecStart=container --mode=open --hostname=%H --specification=%i
+ExecStop=container --mode=close --hostname=%H --specification=%i
+RemainAfterExit=true
