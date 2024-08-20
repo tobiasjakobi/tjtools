@@ -109,6 +109,11 @@ namespace Container {
 
         // Setup SSH private/public key file.
         {
+            const auto home_env = ::getenv("HOME");
+            if (home_env == nullptr) {
+                throw std::runtime_error{"getenv()"};
+            }
+
             const auto ssh_dir = fs::path{::getenv("HOME")} / ".ssh"sv;
 
             const auto private_key = ssh_dir / "id_ed25519"sv;
