@@ -1,0 +1,6 @@
+ACTION=="remove", GOTO="usb_serial_end"
+
+# Serial/USB converter from work.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="AK08MPB7", GROUP="liquid", SYMLINK+="ttyFTDI"
+
+LABEL="usb_serial_end"

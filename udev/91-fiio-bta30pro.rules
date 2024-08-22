@@ -1,0 +1,2 @@
+# Let PulseAudio ignore the FiiO BTA30 Pro.
+ATTRS{idVendor}=="2972", ATTRS{idProduct}=="0047", ENV{PULSE_IGNORE}="1"
