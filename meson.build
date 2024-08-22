@@ -252,11 +252,17 @@ install_data(
 
 scripts = [
   '7z_simple.sh',
+  'copy_merge.sh',
   'detect_display.sh',
+  'exec_script.sh',
+  'flatpak_env_helper.sh',
   'fstrim_gen_env.sh',
   'gamescope-session',
+  'geeqie_ctrl.sh',
   'greetd-session',
   'iscsi_ctrl.sh',
+  'linux_maintainers.sh',
+  'pinentry.sh',
   'resume_wrapper.sh',
   'session_helper.sh',
   'steam-gamepadui-session',
