@@ -1,0 +1,6 @@
+[Unit]
+Description=Gentoo sandbox chroot environment
+
+[Service]
+Type=notify
+ExecStart=gentoo_sandbox --prepare
