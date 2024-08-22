@@ -95,8 +95,8 @@ namespace BrightnessDaemon {
     /**
      * GCC-specific truncate implementation.
      *
-     * Should be replaced with a toolchain-independant version, e.g.
-     * using boost::iostreams?
+     * TODO/LATER: Should be replaced with a toolchain-independant version, e.g.
+     * using boost::iostreams? Or look into std::filesystem::resize_file().
      */
     static void truncate(std::fstream &stream, const std::size_t length) {
         using IOBufferType = __gnu_cxx::stdio_filebuf<char>;
@@ -245,6 +245,7 @@ namespace BrightnessDaemon {
             brightness_stream_.flush();
         }
 
+    private:
         const Config &cfg_;
 
         unsigned current_brightness_;
