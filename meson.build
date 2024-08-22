@@ -134,9 +134,13 @@ udev_rules = [
   '10-external-input.rules',
   '11-razer-mouse.rules',
   '51-rfkill.rules',
+  '61-android-phone.rules',
+  '61-drm-amdgpu.rules',
   '61-optical-drives.rules',
+  '61-usb-serial.rules',
   '70-gamepad-controller.rules',
   '80-docked-mode.rules',
+  '91-fiio-bta30pro.rules',
 ]
 
 
