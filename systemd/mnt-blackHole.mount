@@ -1,0 +1,12 @@
+[Unit]
+Requires=unlock-container@blackHole.11df2963-0a3b-44c9-bb31-3885b3de6eaa.service
+After=unlock-container@blackHole.11df2963-0a3b-44c9-bb31-3885b3de6eaa.service
+
+[Mount]
+What=LABEL=blackHole
+Where=/mnt/blackHole
+Type=ext4
+Options=noatime,ro,commit=60,_netdev
+
+[Install]
+WantedBy=multi-user.target

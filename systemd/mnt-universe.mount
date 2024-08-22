@@ -1,0 +1,12 @@
+[Unit]
+Requires=unlock-container@universe.9323061e-57c1-41fb-98e1-26949b5f8374.service
+After=unlock-container@universe.9323061e-57c1-41fb-98e1-26949b5f8374.service
+
+[Mount]
+What=LABEL=universe
+Where=/mnt/universe
+Type=ext4
+Options=noatime,ro,commit=60,_netdev
+
+[Install]
+WantedBy=multi-user.target
