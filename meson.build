@@ -20,6 +20,9 @@ systemd_system_unit_dir = systemd.get_variable('systemdsystemunitdir')
 udev = dependency('udev')
 udev_rules_dir = udev.get_variable('udev_dir') / 'rules.d'
 
+polkit = dependency('polkit-gobject-1')
+polkit_rules_dir = polkit.get_variable('policydir') / '../rules.d'
+
 conf = configuration_data()
 
 
@@ -144,6 +147,16 @@ udev_rules = [
   '70-gamepad-controller.rules',
   '80-docked-mode.rules',
   '91-fiio-bta30pro.rules',
+]
+
+
+## PolicyKit rules
+
+polkit_rules = [
+  '10-gentoo-sandbox.rules',
+  '11-openvpn-client.rules',
+  '12-iscsi-ctrl.rules',
+  '13-cpu-powerlimit-quiet.rules',
 ]
 
 
@@ -292,5 +305,13 @@ foreach r : udev_rules
     'udev' / r,
     install_mode : 'rw-r--r--',
     install_dir : udev_rules_dir,
+  )
+endforeach
+
+foreach r : polkit_rules
+  install_data(
+    'polkit' / r,
+    install_mode : 'rw-r--r--',
+    install_dir : polkit_rules_dir,
   )
 endforeach
