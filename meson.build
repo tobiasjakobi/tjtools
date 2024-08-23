@@ -265,8 +265,12 @@ install_data(
 
 scripts = [
   '7z_simple.sh',
+  'backup_bootstrap.sh',
+  'build_old_samba.sh',
   'copy_merge.sh',
   'detect_display.sh',
+  'easy_pack.sh',
+  'easy_unpack.sh',
   'exec_script.sh',
   'flatpak_env_helper.sh',
   'fstrim_gen_env.sh',
@@ -275,7 +279,9 @@ scripts = [
   'greetd-session',
   'iscsi_ctrl.sh',
   'linux_maintainers.sh',
+  'net_ps2.sh',
   'pinentry.sh',
+  'remount_storage.sh',
   'resume_wrapper.sh',
   'session_helper.sh',
   'steam-gamepadui-session',
