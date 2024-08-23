@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
 
 function linux_maintainers {
   local repo="${HOME}/development/linux-kernel"

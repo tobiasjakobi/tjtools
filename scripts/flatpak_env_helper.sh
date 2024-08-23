@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
 
 function env_helper {
   local _server="${ENV_PULSE_SERVER}"

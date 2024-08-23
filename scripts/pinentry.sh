@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
 
 function __pinentry {
   local font="Liberation Sans 22"
