@@ -276,18 +276,14 @@ urlparse = executable(
   install : true,
 )
 
-install_data(
-  'scripts/fstrim_gen_env.sh',
-  install_mode : 'rwxr-xr-x',
-  install_dir : install_prefix / install_bindir
-)
-
 scripts = [
   '7z_simple.sh',
   'backup_bootstrap.sh',
   'build_old_samba.sh',
   'copy_merge.sh',
   'detect_display.sh',
+  'easy_data_nc_rx.sh',
+  'easy_data_nc_tx.sh',
   'easy_pack.sh',
   'easy_unpack.sh',
   'exec_script.sh',
