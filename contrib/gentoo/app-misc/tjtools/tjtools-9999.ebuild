@@ -22,6 +22,7 @@ LICENSE="GPL-2"
 SLOT="0"
 
 RDEPEND=">=acct-user/brightness-0
+	>=dev-cpp/nlohmann_json-3.11.2
 	>=dev-libs/boost-1.85.0-r1
 	>=net-misc/curl-8.8.0-r1
 	>=sys-apps/systemd-255.7-r1
