@@ -1,2 +1,15 @@
 # Let PulseAudio ignore the FiiO BTA30 Pro.
+#
+# The BTA30 Pro advertises a large number of supported formats (from 44.1 up to
+# 768 kHz, 16-bit, 32-bit, DSD), but if PA, which it usually does, chooses 44.1 kHz
+# then the device produces no sound.
+#
+# You can see the advertised formats via: cat /proc/asound/cardX/stream0
+#
+# This problem was also noticed here: https://github.com/ReimuNotMoe/FiiO-BTR3-USB-Linux-Workaround
+#
+# A correct fix would be a USB audio quirk in the kernel, so these for reference:
+# - https://github.com/torvalds/linux/blob/master/sound/usb/quirks-table.h
+# - https://lore.kernel.org/lkml/s5hk0ii397m.wl-tiwai@suse.de/T/
+# 
 ATTRS{idVendor}=="2972", ATTRS{idProduct}=="0047", ENV{PULSE_IGNORE}="1"
