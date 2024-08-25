@@ -3,7 +3,7 @@ Description=System wide PulseAudio daemon
 
 [Service]
 User=pulsewide
-ExecStart=/usr/bin/pulseaudio
+ExecStart=pulseaudio
 Restart=on-failure
 
 [Install]

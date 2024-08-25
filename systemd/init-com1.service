@@ -3,7 +3,7 @@ Description=Initialize COM1 port for use with lircd
 
 [Service]
 Type=oneshot
-ExecStart=/bin/setserial -b /dev/ttyS0 uart none
-ExecStart=/sbin/modprobe serial-ir
+ExecStart=setserial -b /dev/ttyS0 uart none
+ExecStart=modprobe serial-ir
 RemainAfterExit=true
-ExecStop=/sbin/modprobe -r serial-ir
+ExecStop=modprobe -r serial-ir
