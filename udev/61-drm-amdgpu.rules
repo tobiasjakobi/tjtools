@@ -13,3 +13,6 @@ LABEL="drm_amdgpu_end"
 
 # Set autosuspend delay of the Navi10 to 30 seconds.
 SUBSYSTEM=="pci", DRIVER=="amdgpu", ATTR{device}=="0x731f", ATTR{vendor}=="0x1002", ATTR{power/autosuspend_delay_ms}="30000"
+
+# Set autosuspend delay of the Navi22 to 10 seconds.
+SUBSYSTEM=="pci", DRIVER=="amdgpu", ATTR{device}=="0x73df", ATTR{vendor}=="0x1002", ATTR{power/autosuspend_delay_ms}="10000"
