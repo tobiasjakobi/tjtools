@@ -34,4 +34,4 @@ LABEL="optical_drives_remote_end"
 LABEL="optical_drives_end"
 
 # Speed reduction on media change (all drives)
-ACTION=="change", KERNEL=="sr?", ENV{DISK_MEDIA_CHANGE}=="1", RUN+="speecontrolpp --device=/dev/%k --speed=4"
+ACTION=="change", KERNEL=="sr?", ENV{DISK_MEDIA_CHANGE}=="1", RUN+="/usr/bin/speecontrolpp --device=/dev/%k --speed=4"

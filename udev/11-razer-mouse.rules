@@ -2,7 +2,7 @@
 ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usbhid", ATTR{bInterfaceClass}=="03", ATTR{bInterfaceNumber}=="01|02", ATTRS{idProduct}=="0084", ATTRS{idVendor}=="1532", ATTR{authorized}="0"
 
 # Touchpad control (Razer mouse)
-SUBSYSTEM=="input", KERNEL=="event[0-9]*", ATTRS{idProduct}=="0084", ATTRS{idVendor}=="1532", RUN+="sudo --user=liquid touchpad_control --mode=udev --usb-interface=$env{ID_USB_INTERFACE_NUM}"
+SUBSYSTEM=="input", KERNEL=="event[0-9]*", ATTRS{idProduct}=="0084", ATTRS{idVendor}=="1532", RUN+="/usr/bin/sudo --user=liquid touchpad_control --mode=udev --usb-interface=$env{ID_USB_INTERFACE_NUM}"
 
 # Configuration (Razer mouse)
 ACTION=="bind", SUBSYSTEM=="hid", DRIVER=="razermouse", ATTRS{idProduct}=="0084", ATTRS{idVendor}=="1532", TAG+="systemd", ENV{SYSTEMD_WANTS}="razer-config@$attr{idVendor}:$attr{idProduct}.service"
