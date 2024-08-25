@@ -2,7 +2,7 @@
 
 ## leena
 
-* systemd user units
+* systemd user units (both regular user and root)
 * add shell scripts from users and root
 * add shell scripts used by sway
 
@@ -11,24 +11,20 @@
 * add UDev rules
 * add polkit rules
 * systemd units
-* systemd user units
+* systemd user units (both regular user and root)
 * add shell scripts from users and root
 * add shell scripts used by sway
 
 ## audioserver
 
-* add UDev rules
-* add polkit rules
-* systemd units
-* systemd user units
+* systemd user units (both regular user and root)
 * add shell scripts from users and root
-* add shell scripts used by sway
 
 ## onyx
 
 * add UDev rules
 * add polkit rules
 * systemd units
-* systemd user units
+* systemd user units (both regular user and root)
 * add shell scripts from users and root
 * add shell scripts used by sway
