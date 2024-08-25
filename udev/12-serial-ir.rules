@@ -1,0 +1,2 @@
+# Allow the lirc group access to the serial-attached IR receiver.
+KERNEL=="lirc?", SUBSYSTEM=="lirc", DRIVERS=="serial_ir", GROUP="lirc"

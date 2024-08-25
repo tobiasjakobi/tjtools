@@ -147,6 +147,7 @@ unit_files = [
 udev_rules = [
   '10-external-input.rules',
   '11-razer-mouse.rules',
+  '12-serial-ir.rules',
   '51-rfkill.rules',
   '61-android-phone.rules',
   '61-drm-amdgpu.rules',
