@@ -4,7 +4,7 @@
 
 * systemd user units (both regular user and root)
 * add shell scripts from users and root
-* add shell scripts used by sway
+* add shell scripts used by sway/waybar
 
 ## ayaneo
 
@@ -13,7 +13,7 @@
 * systemd units
 * systemd user units (both regular user and root)
 * add shell scripts from users and root
-* add shell scripts used by sway
+* add shell scripts used by sway/waybar
 
 ## audioserver
 
@@ -22,9 +22,6 @@
 
 ## onyx
 
-* add UDev rules
-* add polkit rules
-* systemd units
 * systemd user units (both regular user and root)
 * add shell scripts from users and root
-* add shell scripts used by sway
+* add shell scripts used by sway/waybar
