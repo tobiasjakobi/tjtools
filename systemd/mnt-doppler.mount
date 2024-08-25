@@ -1,0 +1,12 @@
+[Unit]
+Requires=unlock-container@doppler.42a18478-e080-4587-a7b4-c0f9b775b48a.service
+After=unlock-container@doppler.42a18478-e080-4587-a7b4-c0f9b775b48a.service
+
+[Mount]
+What=LABEL=doppler
+Where=/mnt/doppler
+Type=ext4
+Options=noatime,ro,commit=60,_netdev
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=System wide PulseAudio daemon
+
+[Service]
+User=pulsewide
+ExecStart=/usr/bin/pulseaudio
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
