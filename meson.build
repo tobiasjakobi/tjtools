@@ -108,6 +108,14 @@ cpu_powerlimit_dependencies = [
   dependency('boost', modules : ['program_options']),
 ]
 
+speedcontrolpp_source_files = [
+  'src/speedcontrolpp.cpp'
+]
+
+speedcontrolpp_dependencies = [
+  dependency('boost', modules : ['program_options']),
+]
+
 upper_sanitize_source_files = [
   'src/upper_sanitize.cpp',
 ]
@@ -242,6 +250,13 @@ cpu_powerlimit = executable(
   'cpu_powerlimit',
   cpu_powerlimit_source_files,
   dependencies : cpu_powerlimit_dependencies,
+  install : true,
+)
+
+speedcontrolpp = executable(
+  'speedcontrolpp',
+  speedcontrolpp_source_files,
+  dependencies : speedcontrolpp_dependencies,
   install : true,
 )
 
