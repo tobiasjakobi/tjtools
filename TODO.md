@@ -2,8 +2,7 @@
 
 ## leena
 
-* systemd user units (both regular user and root)
-* add shell scripts from users and root
+* Bash functions from `bashrc.extern` (users)
 * add shell scripts used by sway/waybar
 
 ## ayaneo
@@ -12,16 +11,17 @@
 * add polkit rules
 * systemd units
 * systemd user units (both regular user and root)
+* Bash functions from `bashrc.extern`
 * add shell scripts from users and root
 * add shell scripts used by sway/waybar
 
 ## audioserver
 
 * systemd user units (both regular user and root)
+* Bash functions from `bashrc.extern`
 * add shell scripts from users and root
 
 ## onyx
 
-* systemd user units (both regular user and root)
-* add shell scripts from users and root
+* Bash functions from `bashrc.extern` (users)
 * add shell scripts used by sway/waybar
