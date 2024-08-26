@@ -1,0 +1,5 @@
+[Unit]
+Description=Cleaning of the Bash history by deduplication
+
+[Service]
+ExecStart=clean_bashhistory

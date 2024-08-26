@@ -16,6 +16,7 @@ install_bindir = get_option('bindir')
 
 systemd = dependency('systemd')
 systemd_system_unit_dir = systemd.get_variable('systemdsystemunitdir')
+systemd_user_unit_dir = systemd.get_variable('systemduserunitdir')
 
 udev = dependency('udev')
 udev_rules_dir = udev.get_variable('udev_dir') / 'rules.d'
@@ -127,9 +128,9 @@ urlparse_source_files = [
 ]
 
 
-## systemd unit files
+## systemd system unit files
 
-unit_files = [
+system_unit_files = [
   'battery-watch.service',
   'brightness-daemon.service',
   'cpu-powerlimit@.service',
@@ -144,6 +145,14 @@ unit_files = [
   'unlock-container@.service',
   'xbox360-config@.service',
   'xbox360-disable.service',
+]
+
+
+## systemd user unit files
+
+user_unit_files = [
+  'clean_bashhistory.service',
+  'clean_bashhistory.timer',
 ]
 
 
@@ -329,11 +338,19 @@ foreach s : bashrc_d_files
   )
 endforeach
 
-foreach u : unit_files
+foreach u : system_unit_files
   install_data(
     'systemd' / u,
     install_mode : 'rw-r--r--',
     install_dir : systemd_system_unit_dir,
+  )
+endforeach
+
+foreach u : user_unit_files
+  install_data(
+    'systemd/user' / u,
+    install_mode : 'rw-r--r--',
+    install_dir : systemd_user_unit_dir,
   )
 endforeach
 

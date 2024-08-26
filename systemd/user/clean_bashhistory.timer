@@ -1,0 +1,8 @@
+[Unit]
+Description=Cleaning of the Bash history by deduplication
+
+[Timer]
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target
