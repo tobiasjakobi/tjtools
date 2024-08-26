@@ -1,21 +1,25 @@
 function full_upd {
-  emerge -uDN "$@" @world
+  emerge --update --deep --newuse "$@" @world
 }
 
 function light_upd {
-  emerge -uDN --exclude="www-client/chromium" --exclude="www-client/firefox" --exclude="app-office/libreoffice" "$@" @world
+  emerge --update --deep --newuse --exclude="www-client/chromium" --exclude="www-client/firefox" \
+    --exclude="app-office/libreoffice" "$@" @world
 }
 
 function sercon {
   local tty="/dev/ttyUSB0"
 
-  [[ -c "${tty}" ]] && screen "${tty}" 115200
+  if [[ -c "${tty}" ]]; then
+    screen "${tty}" 115200
+  fi
 }
 
 function net_config {
   local ethernet="enp5s0"
   local prefix="/etc/systemd/network"
   local name="20-ethernet"
+  local smb_manage="/usr/local/samba/bin/manage.sh"
 
   local mode
   local errcode
@@ -31,6 +35,7 @@ function net_config {
       echo -e "Usage: ${FUNCNAME}"
       echo -e "\t --dhcp [use DHCP for Ethernet interface]"
       echo -e "\t --ps2 [special fixed IP setup for PS2]"
+
       return 1 ;;
   esac
 
@@ -46,14 +51,14 @@ function net_config {
   networkctl reconfigure "${ethernet}"
 
   if [[ "${mode}" = "ps2" ]]; then
-    /usr/local/samba/bin/manage.sh --start
-    "${HOME}"/local/bin/net_ps2.sh "${ethernet}"
-    /usr/local/samba/bin/manage.sh --stop
+    ${smb_manage} --start
+    net_ps2.sh "${ethernet}"
+    ${smb_manage} --stop
   fi
 }
 
 # apply local kernel patches to the tree
-function kpatch {
+function kpatch_apply {
   local patchdir="/usr/src/kernel_patches"
 
   find "${patchdir}" -type f -name \*.patch | sort -n | \
@@ -62,22 +67,43 @@ function kpatch {
   done
 }
 
+function kpatch_copy {
+  local src="/home/liquid/development/linux-kernel"
+  local dst="/usr/src/kernel_patches"
+
+  rm -f ${dst}/*.patch
+
+  find ${src} -maxdepth 1 -type f -name \*.patch | \
+  while read arg; do
+    cp ${arg} ${dst}/
+  done
+
+  chmod 644 ${dst}/*.patch
+}
+
 # kernel make wrapper
 function kmake {
   local version
+  local errocde
 
-  [[ -n "${1}" ]] && make "${1}"
+  if [[ -n "${1}" ]]; then
+    make "${1}"
+  fi
 
   make -j8 && make modules_install
-  if [ $? -ne 0 ]; then
-    echo "error: kernel make or module make failed"
+  errcode=$?
+
+  if [[ ${errcode} -ne 0 ]]; then
+    echo "error: kernel make or module make failed: {errcode}"
+
     return 2
   fi
 
   # extract version from kernel header
   version=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d\" -f2)
-  if [ -z "${version}" ]; then
+  if [[ -z "${version}" ]]; then
     echo "error: failed to extract kernel version"
+
     return 3
   fi
 
@@ -88,19 +114,21 @@ function kmake {
 function filesystem_backup {
   local mode
 
-  if [ -z "${1}" ]; then
+  if [[ -z "${1}" ]]; then
     echo "error: backup filename missing"
+
     return 1
   fi
 
-  if [ -f "${1}" ]; then
+  if [[ -f "${1}" ]]; then
     mode="unpack"
   else
     mode="pack"
   fi
 
-  if [ ! -d "${2}" ]; then
-    echo "error: \"${2}\" is not a directory"
+  if [[ ! -d "${2}" ]]; then
+    echo "error: not a directory: {2}"
+
     return 2
   fi
 
