@@ -23,6 +23,8 @@ udev_rules_dir = udev.get_variable('udev_dir') / 'rules.d'
 polkit = dependency('polkit-gobject-1')
 polkit_rules_dir = polkit.get_variable('policydir') / '../rules.d'
 
+bashrc_d_dir = get_option('sysconfdir') / 'bash/bashrc.d/'
+
 conf = configuration_data()
 
 
@@ -305,11 +307,23 @@ scripts = [
   'sysfs_write.sh',
 ]
 
+bashrc_d_files = [
+  '50-superuser.bash',
+]
+
 foreach s : scripts
   install_data(
     'scripts' / s,
     install_mode : 'rwxr-xr-x',
     install_dir : install_prefix / install_bindir
+  )
+endforeach
+
+foreach s : bashrc_d_files
+  install_data(
+    'bashrc.d' / s,
+    install_mode : 'rw-r--r--',
+    install_dir : install_prefix / bashrc_d_dir
   )
 endforeach
 
