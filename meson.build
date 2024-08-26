@@ -309,6 +309,8 @@ scripts = [
 
 bashrc_d_files = [
   '50-superuser.bash',
+  '51-regular-user.bash',
+  '52-thin-wrapper.bash',
 ]
 
 foreach s : scripts

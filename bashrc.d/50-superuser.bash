@@ -1,3 +1,6 @@
+# Bash functions mainly intended for the superuser of the system.
+# TODO: sort functions alphabetically
+
 function full_upd {
   emerge --update --deep --newuse "$@" @world
 }
