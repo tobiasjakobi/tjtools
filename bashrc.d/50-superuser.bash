@@ -11,34 +11,45 @@ function print_stderr {
 function filesystem_backup {
   local mode
 
-  if [[ -z "${1}" ]]; then
-    echo "error: backup filename missing"
+  local operation_file
+  local operation_directory
 
+  if [[ -z "${1}" ]]; then
+    print_stderr "error: backup filename missing"
     return 1
   fi
 
-  if [[ -f "${1}" ]]; then
+  operation_file="${1}"
+
+  if [[ -f "${operation_file}" ]]; then
     mode="unpack"
+  elif [[ "${operation_file}" == "stdin" ]]; then
+    mode="unpack"
+    operation_file="-"
+  elif [[ "${operation_file}" == "stdout" ]]; then
+    mode="pack"
+    operation_file="-"
   else
     mode="pack"
   fi
 
   if [[ ! -d "${2}" ]]; then
-    echo "error: not a directory: {2}"
-
+    print_stderr "error: not a directory: ${2}"
     return 2
   fi
 
+  operation_directory="${2}"
+
   case "${mode}" in
     pack )
-      echo "info: packing from \"${2}\" to \"${1}\""
-      tar --create --file "${1}" --preserve-permissions --xattrs-include='*.*' \
-          --numeric-owner --directory "${2}" ./ ;;
+      print_stderr "info: packing from \"${operation_directory}\" to \"${operation_file}\""
+      tar --create --file "${operation_file}" --preserve-permissions --xattrs-include='*.*' \
+          --numeric-owner --directory "${operation_directory}" ./ ;;
 
     unpack )
-      echo "info: unpacking to \"${2}\" from \"${1}\""
-      tar --extract --file "${1}" --preserve-permissions --preserve-order \
-          --xattrs-include='*.*' --numeric-owner --directory "${2}" ;;
+      print_stderr "info: unpacking to \"${operation_directory}\" from \"${operation_file}\""
+      tar --extract --file "${operation_file}" --preserve-permissions --preserve-order \
+          --xattrs-include='*.*' --numeric-owner --directory "${operation_directory}" ;;
   esac
 }
 
