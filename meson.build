@@ -153,6 +153,7 @@ system_unit_files = [
 user_unit_files = [
   'clean_bashhistory.service',
   'clean_bashhistory.timer',
+  'virtual-keyboard.service',
 ]
 
 

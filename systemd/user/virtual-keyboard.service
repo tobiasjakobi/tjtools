@@ -1,0 +1,7 @@
+[Unit]
+Description=Virtual Wayland keyboard
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+ExecStart=wvkbd-mobintl --hidden
+ExecReload=kill -SIGRTMIN "${MAINPID}"
