@@ -3,7 +3,7 @@
 
 source ${HOME}/.bashrc.extern
 
-for _ in /etc/bash/bashrc.d/50-*; do
+for _ in /etc/bash/bashrc.d/5*; do
   if [[ $_ == *.@(bash|sh) && -r $_ ]]; then
     source "$_"
   fi
