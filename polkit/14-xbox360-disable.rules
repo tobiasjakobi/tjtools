@@ -1,0 +1,12 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        action.lookup("unit") == "xbox360-disable.service" &&
+        subject.user == "liquid")
+    {
+        var verb = action.lookup("verb");
+        if (verb == "start" || verb == "stop")
+        {
+            return polkit.Result.YES;
+        }
+    }
+});

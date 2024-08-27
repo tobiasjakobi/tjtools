@@ -179,7 +179,8 @@ polkit_rules = [
   '10-gentoo-sandbox.rules',
   '11-openvpn-client.rules',
   '12-iscsi-ctrl.rules',
-  '13-cpu-powerlimit-quiet.rules',
+  '13-cpu-powerlimit.rules',
+  '14-xbox360-disable.rules',
 ]
 
 

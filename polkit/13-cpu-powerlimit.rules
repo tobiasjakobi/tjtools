@@ -1,0 +1,21 @@
+const validUsers = new Array("liquid", "greetd");
+
+function isValidUser(user) {
+  return validUsers.indexOf(user) != -1;
+}
+
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" && isValidUser(subject.user)) {
+        var unit = action.lookup("unit");
+        if (unit != "cpu-powerlimit@turbo.service" && unit != "cpu-powerlimit@quiet.service") {
+            return polkit.Result.NO;
+        }
+
+        var verb = action.lookup("verb");
+        if (verb != "start" && verb != "stop" && verb != "restart") {
+            return polkit.Result.NO;
+        }
+
+        return polkit.Result.YES;
+    }
+});
