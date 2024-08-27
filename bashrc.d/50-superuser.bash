@@ -1,21 +1,108 @@
 # Bash functions mainly intended for the superuser of the system.
-# TODO: sort functions alphabetically
+
+## Helpers
+
+function print_stderr {
+  >&2 echo "$@"
+}
+
+## Bash functions
+
+function filesystem_backup {
+  local mode
+
+  if [[ -z "${1}" ]]; then
+    echo "error: backup filename missing"
+
+    return 1
+  fi
+
+  if [[ -f "${1}" ]]; then
+    mode="unpack"
+  else
+    mode="pack"
+  fi
+
+  if [[ ! -d "${2}" ]]; then
+    echo "error: not a directory: {2}"
+
+    return 2
+  fi
+
+  case "${mode}" in
+    pack )
+      echo "info: packing from \"${2}\" to \"${1}\""
+      tar --create --file "${1}" --preserve-permissions --xattrs-include='*.*' \
+          --numeric-owner --directory "${2}" ./ ;;
+
+    unpack )
+      echo "info: unpacking to \"${2}\" from \"${1}\""
+      tar --extract --file "${1}" --preserve-permissions --preserve-order \
+          --xattrs-include='*.*' --numeric-owner --directory "${2}" ;;
+  esac
+}
 
 function full_upd {
   emerge --update --deep --newuse "$@" @world
 }
 
+# kernel make wrapper
+function kmake {
+  local version
+  local errocde
+
+  if [[ -n "${1}" ]]; then
+    make "${1}"
+  fi
+
+  make -j8 && make modules_install
+  errcode=$?
+
+  if [[ ${errcode} -ne 0 ]]; then
+    echo "error: kernel make or module make failed: {errcode}"
+
+    return 2
+  fi
+
+  # extract version from kernel header
+  version=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d\" -f2)
+  if [[ -z "${version}" ]]; then
+    echo "error: failed to extract kernel version"
+
+    return 3
+  fi
+
+  cp arch/x86/boot/bzImage /boot/kernel-${version}
+  ln -sf initrd-common /boot/initrd-${version}
+}
+
+# apply local kernel patches to the tree
+function kpatch_apply {
+  local patchdir="/usr/src/kernel_patches"
+
+  find "${patchdir}" -type f -name \*.patch | sort -n | \
+  while read patch; do
+    git apply --stat --apply "${patch}"
+  done
+}
+
+function kpatch_copy {
+  local src="/home/liquid/development/linux-kernel"
+  local dst="/usr/src/kernel_patches"
+
+  rm -f ${dst}/*.patch
+
+  find ${src} -maxdepth 1 -type f -name \*.patch | \
+  while read arg; do
+    cp ${arg} ${dst}/
+  done
+
+  chmod 644 ${dst}/*.patch
+}
+
 function light_upd {
   emerge --update --deep --newuse --exclude="www-client/chromium" --exclude="www-client/firefox" \
     --exclude="app-office/libreoffice" "$@" @world
-}
-
-function sercon {
-  local tty="/dev/ttyUSB0"
-
-  if [[ -c "${tty}" ]]; then
-    screen "${tty}" 115200
-  fi
 }
 
 function net_config {
@@ -60,90 +147,10 @@ function net_config {
   fi
 }
 
-# apply local kernel patches to the tree
-function kpatch_apply {
-  local patchdir="/usr/src/kernel_patches"
+function sercon {
+  local tty="/dev/ttyUSB0"
 
-  find "${patchdir}" -type f -name \*.patch | sort -n | \
-  while read patch; do
-    git apply --stat --apply "${patch}"
-  done
-}
-
-function kpatch_copy {
-  local src="/home/liquid/development/linux-kernel"
-  local dst="/usr/src/kernel_patches"
-
-  rm -f ${dst}/*.patch
-
-  find ${src} -maxdepth 1 -type f -name \*.patch | \
-  while read arg; do
-    cp ${arg} ${dst}/
-  done
-
-  chmod 644 ${dst}/*.patch
-}
-
-# kernel make wrapper
-function kmake {
-  local version
-  local errocde
-
-  if [[ -n "${1}" ]]; then
-    make "${1}"
+  if [[ -c "${tty}" ]]; then
+    screen "${tty}" 115200
   fi
-
-  make -j8 && make modules_install
-  errcode=$?
-
-  if [[ ${errcode} -ne 0 ]]; then
-    echo "error: kernel make or module make failed: {errcode}"
-
-    return 2
-  fi
-
-  # extract version from kernel header
-  version=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d\" -f2)
-  if [[ -z "${version}" ]]; then
-    echo "error: failed to extract kernel version"
-
-    return 3
-  fi
-
-  cp arch/x86/boot/bzImage /boot/kernel-${version}
-  ln -sf initrd-common /boot/initrd-${version}
-}
-
-function filesystem_backup {
-  local mode
-
-  if [[ -z "${1}" ]]; then
-    echo "error: backup filename missing"
-
-    return 1
-  fi
-
-  if [[ -f "${1}" ]]; then
-    mode="unpack"
-  else
-    mode="pack"
-  fi
-
-  if [[ ! -d "${2}" ]]; then
-    echo "error: not a directory: {2}"
-
-    return 2
-  fi
-
-  case "${mode}" in
-    pack )
-      echo "info: packing from \"${2}\" to \"${1}\""
-      tar --create --file "${1}" --preserve-permissions --xattrs-include='*.*' \
-          --numeric-owner --directory "${2}" ./ ;;
-
-    unpack )
-      echo "info: unpacking to \"${2}\" from \"${1}\""
-      tar --extract --file "${1}" --preserve-permissions --preserve-order \
-          --xattrs-include='*.*' --numeric-owner --directory "${2}" ;;
-  esac
 }
