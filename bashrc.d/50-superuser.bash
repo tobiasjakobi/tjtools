@@ -10,18 +10,18 @@ function __get_kernel_version {
   local dir_prefix="linux-"
 
   local cwd
-  local dirname
+  local dir_path
   local ver_string
   local ver_semantic
 
-  tmp=$(realpath $(pwd))
-  dirname=$(basename "${tmp}")
+  cwd=$(realpath $(pwd))
+  dir_path=$(basename "${cwd}")
 
-  if [[ "${dirname:0:6}" != "${dir_prefix}" ]]; then
+  if [[ "${dir_path:0:6}" != "${dir_prefix}" ]]; then
     return 1
   fi
 
-  ver_string=$(echo ${dirname#${prefix}} | cut -d- -f1)
+  ver_string=$(echo ${dir_path#${dir_prefix}} | cut -d- -f1)
 
   readarray -t -d . ver_semantic < <(echo "${ver_string}")
 
