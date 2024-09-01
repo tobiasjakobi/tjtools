@@ -6,6 +6,28 @@ function print_stderr {
   >&2 echo "$@"
 }
 
+function __get_kernel_version {
+  local dir_prefix="linux-"
+
+  local cwd
+  local dirname
+  local ver_string
+  local ver_semantic
+
+  tmp=$(realpath $(pwd))
+  dirname=$(basename "${tmp}")
+
+  if [[ "${dirname:0:6}" != "${dir_prefix}" ]]; then
+    return 1
+  fi
+
+  ver_string=$(echo ${dirname#${prefix}} | cut -d- -f1)
+
+  readarray -t -d . ver_semantic < <(echo "${ver_string}")
+
+  echo -n "${ver_semantic[0]}.${ver_semantic[1]}"
+}
+
 ## Bash functions
 
 function filesystem_backup {
@@ -59,8 +81,31 @@ function full_upd {
 
 # kernel make wrapper
 function kmake {
-  local version
+  local kernel_ver
+  local config_name
+  local build_ver
   local errocde
+
+  kernel_ver=$(__get_kernel_version)
+  errcode=$?
+
+  if [[ ${errcode} -ne 0 ]]; then
+    echo "error: failed to get kernel version: ${errcode}"
+
+    return 1
+  fi
+
+  echo "info: detected kernel version: ${kernel_ver}"
+
+  if [[ -e ./".config" ]]; then
+    mv ./".config" ./".config.backup"
+  fi
+
+  config_name="vanilla-${kernel_ver}.conf"
+
+  echo "info: using config: ${config_name}"
+
+  cp ../"${config_name}" ./".config"
 
   if [[ -n "${1}" ]]; then
     make "${1}"
@@ -70,21 +115,75 @@ function kmake {
   errcode=$?
 
   if [[ ${errcode} -ne 0 ]]; then
-    echo "error: kernel make or module make failed: {errcode}"
+    echo "error: kernel make or module make failed: ${errcode}"
 
     return 2
   fi
 
+  cp ./".config" ../"${config_name}"
+
   # extract version from kernel header
-  version=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d\" -f2)
-  if [[ -z "${version}" ]]; then
+  build_ver=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d\" -f2)
+  if [[ -z "${build_ver}" ]]; then
     echo "error: failed to extract kernel version"
 
     return 3
   fi
 
-  cp arch/x86/boot/bzImage /boot/kernel-${version}
-  ln -sf initrd-common /boot/initrd-${version}
+  cp arch/x86/boot/bzImage /boot/kernel-${build_ver}
+  ln -sf initrd-common /boot/initrd-${build_ver}
+}
+
+# crashkernel make wrapper
+function kmake_kdump {
+  local kernel_ver
+  local errcode
+
+  kernel_ver=$(__get_kernel_version)
+  errcode=$?
+
+  if [[ ${errcode} -ne 0 ]]; then
+    echo "error: failed to get kernel version: ${errcode}"
+
+    return 1
+  fi
+
+  echo "info: detected kernel version: ${kernel_ver}"
+
+  if [[ -e ./".config" ]]; then
+    mv ./".config" ./".config.backup"
+  fi
+
+  config_name="vanilla-${kernel_ver}.kdump.conf"
+
+  echo "info: using config: ${config_name}"
+
+  cp ../"${config_name}" ./".config"
+
+  if [[ -n "${1}" ]]; then
+    make "${1}"
+  fi
+
+  make -j8
+  errcode=$?
+
+  if [[ ${errcode} -ne 0 ]]; then
+    echo "error: kernel make failed: ${errcode}"
+
+    return 2
+  fi
+
+  cp ./".config" ../"${config_name}"
+
+  # extract version from kernel header
+  build_ver=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d\" -f2)
+  if [[ -z "${build_ver}" ]]; then
+    echo "error: failed to extract kernel version"
+
+    return 3
+  fi
+
+  cp arch/x86/boot/bzImage /boot/kdump-${build_ver}
 }
 
 # apply local kernel patches to the tree
