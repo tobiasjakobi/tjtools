@@ -7,6 +7,8 @@ function __vnc_internal {
   vnc_username="${2}"
   vnc_password="${3}"
 
+  shift 3
+
   case "${1}" in
     "--spawn" )
       ssh -L 15900:localhost:5900 "${vnc_host}" "env WAYLAND_DISPLAY=wayland-1 wayvnc --keyboard=de-nodeadkeys --render-cursor --gpu 127.0.0.1 5900" ;;
