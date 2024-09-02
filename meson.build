@@ -139,6 +139,7 @@ system_unit_files = [
   'init-com1.service',
   'iscsi-ctrl@.service',
   'kdump-recv.service',
+  'kdump.service',
   'mnt-blackHole.mount',
   'mnt-doppler.mount',
   'mnt-universe.mount',
