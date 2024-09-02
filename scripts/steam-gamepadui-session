@@ -18,7 +18,7 @@ function steam_gamepadui_session {
   fi
 
   # Let GameScope use the preferred output.
-  preferred_output="{GAMESCOPE_PREFERRED_OUTPUT}"
+  preferred_output="${GAMESCOPE_PREFERRED_OUTPUT}"
   if [[ -n "${preferred_output}" ]]; then
     gamescope_args+=("--prefer-output=${preferred_output}")
   fi
