@@ -1,0 +1,3 @@
+KDUMP_KERNEL_IMAGE=/boot/kernel-kdump
+KDUMP_INITRD_IMAGE=/boot/initrd-kdump
+KDUMP_ARGS=irqpoll nr_cpus=1 reset_devices gk.emergency=reboot gk.net.iface=eth0 ip=192.168.0.1/24

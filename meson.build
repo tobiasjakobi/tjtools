@@ -25,6 +25,7 @@ polkit = dependency('polkit-gobject-1')
 polkit_rules_dir = polkit.get_variable('policydir') / '../rules.d'
 
 bashrc_d_dir = get_option('sysconfdir') / 'bash/bashrc.d/'
+kdump_dir = get_option('sysconfdir') / 'kdump'
 
 conf = configuration_data()
 
@@ -187,6 +188,15 @@ polkit_rules = [
 ]
 
 
+## KDump files
+
+kdump_files = [
+  'busy-config',
+  'genkernel-config',
+  'linuxrc',
+]
+
+
 ## Build arguments
 
 library_build_args = [
@@ -308,6 +318,7 @@ scripts = [
   'geeqie_ctrl.sh',
   'greetd-session',
   'iscsi_ctrl.sh',
+  'kdump_genkernel.sh',
   'kdump_recv.sh',
   'linux_maintainers.sh',
   'net_ps2.sh',
@@ -372,5 +383,13 @@ foreach r : polkit_rules
     'polkit' / r,
     install_mode : 'rw-r--r--',
     install_dir : polkit_rules_dir,
+  )
+endforeach
+
+foreach f : kdump_files
+  install_data(
+    'kdump' / r,
+    install_mode : 'rw-r--r--',
+    install_dir : kdump_dir,
   )
 endforeach

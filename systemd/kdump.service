@@ -1,0 +1,13 @@
+[Unit]
+Description=Load the kdump kernel
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+EnvironmentFile=/etc/kdump/config
+ExecStart=kexec --load-panic "${KDUMP_KERNEL_IMAGE}" --initrd="${KDUMP_INITRD_IMAGE}" --command-line="${KDUMP_ARGS}"
+ExecStop=kexec --load-panic --unload
+
+[Install]
+WantedBy=multi-user.target

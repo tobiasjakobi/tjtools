@@ -1,0 +1,44 @@
+# Configuration file for genkernel
+
+# Enable color output in genkernel
+NOCOLOR="false"
+
+# Add BTRFS support
+BTRFS="no"
+
+# Default share directory location
+GK_SHARE="${GK_SHARE:-/usr/share/genkernel}"
+
+# Location of the default cache
+CACHE_DIR="/var/cache/genkernel"
+
+# Location of DISTDIR, where our source tarballs are stored
+DISTDIR="${GK_SHARE}/distfiles"
+
+# Log output file
+LOGFILE="/var/log/genkernel.log"
+
+# Debug Level
+LOGLEVEL=1
+
+# Default location of kernel source
+DEFAULT_KERNEL_SOURCE="/usr/src/linux"
+
+# Specifies a user created busybox config
+BUSYBOX_CONFIG="/etc/kdump/busy-config"
+
+# Copy all compiled kernel modules to the initramfs
+ALLRAMDISKMODULES="no"
+
+# Copy selected modules to the initramfs based on arch-specific modules_load file
+RAMDISKMODULES="no"
+
+# Override the default used linuxrc script.
+LINUXRC="/etc/kdump/linuxrc"
+
+# Build the generated initramfs into the kernel instead of
+# keeping it as a separate file
+INTEGRATED_INITRAMFS="no"
+
+# Compress generated initramfs
+COMPRESS_INITRD="no"
