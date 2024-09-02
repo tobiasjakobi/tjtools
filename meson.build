@@ -388,7 +388,7 @@ endforeach
 
 foreach f : kdump_files
   install_data(
-    'kdump' / r,
+    'kdump' / f,
     install_mode : 'rw-r--r--',
     install_dir : kdump_dir,
   )
