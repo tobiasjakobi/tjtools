@@ -1,0 +1,9 @@
+[Unit]
+Description=Receiver for UDP netconsole frames
+After=basic.target
+
+[Service]
+ExecStart=socat -u UDP-RECV:6666 OPEN:/var/log/netconsole-recv.dmp,creat,append
+
+[Install]
+WantedBy=multi-user.target

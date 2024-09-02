@@ -1,0 +1,11 @@
+[Unit]
+Description=Receiver for flat kdump files over TCP
+After=basic.target
+
+[Service]
+User=audiodaemon
+EnvironmentFile=/etc/kdump-recv.conf
+ExecStart=socat -u tcp4-listen:"${KDUMP_RECV_PORT}",reuseaddr,fork,range="${KDUMP_RECV_RANGE}" exec:kdump_recv.sh
+
+[Install]
+WantedBy=multi-user.target
