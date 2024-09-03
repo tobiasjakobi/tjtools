@@ -60,6 +60,10 @@ function onyx_poweroff {
   ssh onyx "sudo systemctl poweroff"
 }
 
+function protonkill {
+  protontricks --command "wineserver --kill" "$@"
+}
+
 function qt_duckstation {
   local cfg=$(cat ${HOME}/local/xpadneo-sdl.conf)
 
