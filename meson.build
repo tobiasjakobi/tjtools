@@ -329,6 +329,7 @@ scripts = [
   'session_helper.sh',
   'steam-gamepadui-session',
   'steamos-session-select',
+  'sway_appmenu.sh',
   'sway-session',
   'sysfs_write.sh',
 ]
