@@ -7,7 +7,6 @@
 
 ## ayaneo
 
-* Bash functions from `bashrc.extern` (users)
 * add shell scripts used by sway
 
 ## audioserver
