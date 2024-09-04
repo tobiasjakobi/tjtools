@@ -85,6 +85,58 @@ function bluray_master {
   mkisofs -quiet -iso-level 4 -full-iso9660-filenames -udf -V "${volume_id}" -o "${output_file}" "${source_dir}"
 }
 
+# Fetch ReplayGain algorithm of the current track and adjust the preamp value of CMus accordingly.
+function cmus_r128 {
+  local status
+  local algo
+  local preamp
+
+  status=$(cmus-remote -Q 2> /dev/null | grep "^tag ")
+  if [[ -z "${status}" ]]; then
+    return 0
+  fi
+
+  algo=$(echo "${status}" | grep "^tag replaygain_algorithm" | cut -d' ' -f3-)
+
+  if [[ "${algo}" == "EBU R128" ]]; then
+    echo "info: EBU R128 detected, setting preamp to 7.0dB"
+    preamp="7.0"
+  else
+    echo "info: ReplayGain detected, setting preamp to 4.0dB"
+    preamp="4.0"
+  fi
+
+  cmus-remote -C "set replaygain_preamp=${preamp}"
+}
+
+# Output nicely formatted CMus "Now Playing" status.
+function cmus_status {
+  local status
+  local artist
+  local title
+  local album
+  local output
+
+  status=$(cmus-remote -Q 2> /dev/null | grep "^tag ")
+  if [[ -z "${status}" ]]; then
+    return 0
+  fi
+
+  artist=$(echo "${status}" | grep "^tag artist " | cut -d' ' -f3-)
+  title=$(echo "${status}" | grep "^tag title " | cut -d' ' -f3-)
+  album=$(echo "${status}" | grep "^tag album " | cut -d' ' -f3-)
+
+  output="${artist} -"
+
+  if [[ -n "${album}" ]]; then
+    output+=" [${album}]"
+  fi
+
+  output+=" ${title}"
+
+  echo "${output}"
+}
+
 # Convert file with CRLF (carriage return / line feed) endings to normal LF (unix style) endings.
 function convert_crlf {
   local output
@@ -108,6 +160,57 @@ function convert_crlf {
   fi
 
   cat "${1}" | tr -d '\15\32' > "${output}"
+}
+
+# Convert text files with various encodings to UTF8.
+function convert_textenc {
+  local input_path
+  local output_path
+  local fileinfo
+  local file_type
+  local charset
+
+  if [[ ! -f "${1}" ]]; then
+    echo "error: no such file: ${1}"
+
+    return 1
+  fi
+
+  input_path="${1}"
+
+  if [[ -n "${2}" ]]; then
+    output_path="${2}"
+  else
+    output_path="${input_path}.utf8"
+  fi
+
+  if [[ -e "${output_path}" ]]; then
+    echo "error: output already exists: ${output_path}"
+
+    return 2
+  fi
+
+  fileinfo=$(file --brief --mime "${input_path}")
+  file_type=$(echo "${fileinfo}" | cut -d';' -f1)
+  charset=$(echo "${fileinfo}" | grep -o -E "charset=[[:print:]]+" | cut -d'=' -f2)
+
+  if [[ "${file_type}" != "text/plain" ]]; then
+    echo "error: input is not of type: text/plain"
+
+    return 3
+  fi
+
+  case "${charset}" in
+    "utf-16le" )
+      iconv -f utf16le -t utf8 "${input_path}" > "${output_path}" ;;
+
+    * )
+      echo "error: unknown charset: ${charset}"
+
+      return 4 ;;
+  esac
+
+  return 0
 }
 
 function dtbash {
@@ -137,6 +240,80 @@ function envconfig {
       echo "Usage: ${FUNCNAME} wine"
       return 1
   esac
+}
+
+
+function guess_textenc {
+  local guesses=(
+    "utf16le"
+    "gb18030"
+    "sjis-open"
+  )
+
+  local input_path
+  local output_path
+  local charset
+  local idx
+  local guess
+
+  if [[ ! -f "${1}" ]]; then
+    echo "error: no such file: ${1}"
+
+    return 1
+  fi
+
+  input_path="${1}"
+
+  if [[ -n "${2}" ]]; then
+    output_path="${2}"
+  else
+    output_path="${input_path}.utf8"
+  fi
+
+  if [[ -e "${output_path}" ]]; then
+    echo "error: output already exists: ${output_path}"
+
+    return 2
+  fi
+
+  charset=$(file --brief --mime "${input_path}" | grep -o -E "charset=[[:print:]]+" | cut -d'=' -f2)
+
+  case "${charset}" in
+    "utf-8" )
+      echo "info: input already has utf-8 encoding"
+      cat "${input_path}" > "${output_path}"
+
+      return 0 ;;
+
+    "iso-8859"*|"us-ascii" )
+      echo "info: input has encoding: ${charset}"
+      iconv -f "${charset}" -t utf8 "${input_path}" > "${output_path}"
+
+      return 0 ;;
+
+     * )
+       echo "info: text encoding from MIME inconclusive" ;;
+  esac
+
+  idx=0
+  while [[ ${idx} -lt ${#guesses[@]} ]]; do
+    guess="${guesses[${idx}]}"
+
+    iconv -f "${guess}" -t utf8 "${input_path}" > /dev/null 2> /dev/null
+
+    if [[ $? -eq 0 ]]; then
+      echo "info: input has encoding: ${guess}"
+      iconv -f "${guess}" -t utf8 "${input_path}" > "${output_path}"
+
+      return 0
+    fi
+
+    ((idx++))
+  done
+
+  echo "error: failed to detect input encoding"
+
+  return 3
 }
 
 function launch_game {
@@ -219,6 +396,78 @@ function launch_game {
       echo -e "\t --ut99"
        ;;
   esac
+}
+
+# Convert MSF values to byte indices that can then be feed into shnsplit.
+#
+# The MSF values can be extracted from the cuesheet file as such:
+# grep INDEX <cuesheet> | grep -o -E "[[:digit:]]+:[[:digit:]]+:[[:digit:]]+"
+function msf_to_byte {
+  local error
+  local sample_rate
+  local bitrate
+  local channels
+
+  local sample_bytes
+  local frame_samples
+  local minutes
+  local seconds
+  local frames
+
+  error=0
+
+  while [[ -n "${1}" ]]; do
+    case "${1}" in
+      "--sample-rate" )
+        sample_rate="${2}"
+        shift 2 ;;
+
+      "--bitrate" )
+        bitrate="${2}"
+        shift 2 ;;
+
+      "--channels" )
+        channels="${2}"
+        shift 2 ;;
+
+      * )
+        error=1
+        break ;;
+    esac
+  done
+
+  if [[ ${error} -eq 1 ]] || [[ -z "${sample_rate}" ]] || [[ -z "${bitrate}" ]] || [[ -z "${channels}" ]]; then
+    echo "Usage: ${FUNCNAME} --sample-rate <rate in Hz> --bitrate <bits> --channels <number of channels>"
+
+    return 1
+  fi
+
+  if [[ $(echo "${bitrate} % 8" | bc) -ne 0 ]]; then
+    echo "error: bitrate not a multiple of 8"
+
+    return 2
+  fi
+
+  # 1 second = 75 frames
+  if [[ $(echo "${sample_rate} % 75" | bc) -ne 0 ]]; then
+    echo "error: sample rate not a multiple of 75"
+
+    return 3
+  fi
+
+  # sample size in bytes
+  sample_bytes=$(echo "(${bitrate} / 8) * ${channels}" | bc)
+
+  # number of samples per frame
+  frame_samples=$(echo "${sample_rate} / 75" | bc)
+
+  while read msf_value; do
+    minutes=$(echo "${msf_value}" | cut -d':' -f1)
+    seconds=$(echo "${msf_value}" | cut -d':' -f2)
+    frames=$(echo "${msf_value}" | cut -d':' -f3)
+
+    echo "((${minutes} * 60 + ${seconds}) * ${sample_rate} + ${frames} * ${frame_samples}) * ${sample_bytes}" | bc
+  done
 }
 
 function permission_sanitize {
@@ -324,6 +573,40 @@ function unpack_iso {
 
   umount "${mount_point}"
   cdemu unload ${cdemu_slot}
+}
+
+function unpack_multi {
+  local rar_part1="part1.rar"
+  local rar_part01="part01.rar"
+
+  local unpack_dir
+  local unpack_password
+
+  local argbase
+
+  if [[ ! -d "${1}" ]]; then
+    echo "error: directory not found: ${1}"
+
+    return 1
+  fi
+
+  unpack_dir="${1}"
+
+  if [[ -z "${2}" ]]; then
+    echo "error: missing password argument"
+
+    return 2
+  fi
+
+  unpack_password="${2}"
+
+  find "${unpack_dir}" -type f -name *.${rar_part1} -or -name *.${rar_part01} | \
+  while read arg; do
+    argbase="${arg%.${rar_part1}}"
+    argbase="${argbase%.${rar_part01}}"
+
+    unrar x -p"${unpack_password}" -inul -- "${arg}" "${1}"/ && rm "${argbase}".part[0-9]*.rar
+  done
 }
 
 function xmount {
