@@ -1,11 +1,13 @@
 function __vnc_internal {
+  local outer_funcname
   local vnc_host
   local vnc_username
   local vnc_password
 
-  vnc_host="${1}"
-  vnc_username="${2}"
-  vnc_password="${3}"
+  outer_funcname="${1}"
+  vnc_host="${2}"
+  vnc_username="${3}"
+  vnc_password="${4}"
 
   shift 3
 
@@ -20,7 +22,7 @@ function __vnc_internal {
       ssh "${vnc_host}" "wayvncctl wayvnc-exit" ;;
 
     * )
-      echo "Usage: ${FUNCNAME} --spawn|--connect|--exit" ;;
+      echo "Usage: ${outer_funcname} --spawn|--connect|--exit" ;;
   esac
 }
 
