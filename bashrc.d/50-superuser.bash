@@ -2,7 +2,7 @@
 
 ## Helpers
 
-function print_stderr {
+function __print_stderr {
   >&2 echo "$@"
 }
 
@@ -37,7 +37,8 @@ function filesystem_backup {
   local operation_directory
 
   if [[ -z "${1}" ]]; then
-    print_stderr "error: backup filename missing"
+    __print_stderr "error: backup filename missing"
+
     return 1
   fi
 
@@ -56,7 +57,8 @@ function filesystem_backup {
   fi
 
   if [[ ! -d "${2}" ]]; then
-    print_stderr "error: not a directory: ${2}"
+    __print_stderr "error: not a directory: ${2}"
+
     return 2
   fi
 
@@ -64,12 +66,14 @@ function filesystem_backup {
 
   case "${mode}" in
     pack )
-      print_stderr "info: packing from \"${operation_directory}\" to \"${operation_file}\""
+      __print_stderr "info: packing from \"${operation_directory}\" to \"${operation_file}\""
+
       tar --create --file "${operation_file}" --preserve-permissions --xattrs-include='*.*' \
           --numeric-owner --directory "${operation_directory}" ./ ;;
 
     unpack )
-      print_stderr "info: unpacking to \"${operation_directory}\" from \"${operation_file}\""
+      __print_stderr "info: unpacking to \"${operation_directory}\" from \"${operation_file}\""
+
       tar --extract --file "${operation_file}" --preserve-permissions --preserve-order \
           --xattrs-include='*.*' --numeric-owner --directory "${operation_directory}" ;;
   esac
