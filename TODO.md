@@ -8,6 +8,7 @@
 ## ayaneo
 
 * add shell scripts used by sway
+* copy `cpu-powerlimits.conf` and add as template
 
 ## audioserver
 
