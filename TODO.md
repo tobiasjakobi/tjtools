@@ -5,10 +5,6 @@
 * Bash functions from `bashrc.extern` (users)
 * add shell scripts used by sway
 
-## ayaneo
-
-* add shell scripts used by sway
-
 ## audioserver
 
 * systemd user units (both regular user and root)
