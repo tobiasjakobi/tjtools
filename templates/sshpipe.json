@@ -1,0 +1,102 @@
+{
+    "mpv@leena": {
+        "hostname": "leena",
+        "commands": {
+            "play_pause": "mpv_ipc cycle pause",
+            "rewind": "mpv_ipc seek -20",
+            "forward": "mpv_ipc seek +20",
+            "next": "mpv_ipc add chapter +1",
+            "previous": "mpv_ipc add chapter -1",
+            "volume_up": "mpv_ipc add ao-volume +10",
+            "volume_down": "mpv_ipc add ao-volume -10",
+            "power": "mpv_ipc quit",
+            "cycle_subs": "mpv_ipc cycle sub",
+            "switch_audio": "mpv_ipc cycle audio",
+            "toggle_fullscreen": "mpv_ipc vo_fullscreen"
+        },
+        "keymap": {
+            "key:q": "power",
+            "key:one": "rewind",
+            "key:two": "forward",
+            "key:up": "next",
+            "key:down": "previous",
+            "key:a": "cycle_subs",
+            "key:s": "switch_audio",
+            "key:d": "toggle_fullscreen",
+            "key:space": "play_pause",
+            "key:m": "volume_up",
+            "key:n": "volume_down"
+        }
+    },
+    "mpv@audioserver": {
+        "hostname": "audioserver",
+        "commands": {
+            "play_pause": "mpv_ipc cycle pause",
+            "rewind": "mpv_ipc seek -20",
+            "forward": "mpv_ipc seek +20",
+            "next": "mpv_ipc add chapter +1",
+            "previous": "mpv_ipc add chapter -1",
+            "volume_up": "mpv_ipc add ao-volume +10",
+            "volume_down": "mpv_ipc add ao-volume -10",
+            "power": "mpv_ipc quit",
+            "bd_play": "${HOME}/local/bin/cdda_play.sh --bluray",
+            "dvd_play": "${HOME}/local/bin/cdda_play.sh --dvdrom",
+            "bd_open": "eject /dev/optical/bluray_cd",
+            "dvd_open": "eject /dev/optical/dvdrom_cd"
+        },
+        "keymap": {
+            "key:q": "power",
+            "key:one": "rewind",
+            "key:two": "forward",
+            "key:up": "next",
+            "key:down": "previous",
+            "key:o": "bd_play",
+            "key:p": "dvd_play",
+            "key:k": "bd_open",
+            "key:l": "dvd_open",
+            "key:space": "play_pause",
+            "key:m": "volume_up",
+            "key:n": "volume_down"
+        }
+    },
+    "cmus@leena": {
+        "hostname": "leena",
+        "commands": {
+            "play_pause": "cmus-remote -u",
+            "stop": "cmus-remote -s",
+            "rewind": "cmus-remote -k -5",
+            "forward": "cmus-remote -k +5",
+            "next": "cmus-remote -n",
+            "previous": "cmus-remote -r",
+            "volume_up": "cmus-remote -v +5%",
+            "volume_down": "cmus-remote -v -5%",
+            "power": "cmus-remote -C quit",
+            "clear_queue": "cmus-remote -q -c"
+        },
+        "keymap": {
+            "key:one": "rewind",
+            "key:two": "forward",
+            "key:space": "play_pause",
+            "key:m": "volume_up",
+            "key:n": "volume_down"
+        }
+    },
+    "retroarch@chirori-bt": {
+        "hostname": "chidori-bt",
+        "commands": {
+            "play_pause": "${HOME}/local/bin/rarch_remote.sh PAUSE_TOGGLE",
+            "stop": "${HOME}/local/bin/rarch_remote.sh QUIT",
+            "volume_up": "${HOME}/local/bin/rarch_remote.sh VOLUME_UP",
+            "volume_down": "${HOME}/local/bin/rarch_remote.sh VOLUME_DOWN",
+            "rarch_psx": "${HOME}/local/bin/rarch_launch.sh psx",
+            "rarch_snes": "${HOME}/local/bin/rarch_launch.sh snes",
+            "rarch_menu": "${HOME}/local/bin/rarch_remote.sh MENU_TOGGLE",
+            "cpu_perf": "sudo system_perf.sh --performance",
+            "cpu_ondemand": "sudo system_perf.sh --ondemand",
+            "chrony_step": "sudo chrony_cmd.sh makestep"
+        },
+        "keymap": {
+            "key:space": "play_pause"
+        }
+    }
+}
