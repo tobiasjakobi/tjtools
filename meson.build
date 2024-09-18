@@ -328,6 +328,7 @@ scripts = [
   'resume_wrapper.sh',
   'session_helper.sh',
   'steam-gamepadui-session',
+  'steamos-select-branch',
   'steamos-session-select',
   'sway_appmenu.sh',
   'sway-session',
