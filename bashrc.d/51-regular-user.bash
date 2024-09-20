@@ -9,7 +9,7 @@ function __vnc_internal {
   vnc_username="${3}"
   vnc_password="${4}"
 
-  shift 3
+  shift 4
 
   case "${1}" in
     "--spawn" )
