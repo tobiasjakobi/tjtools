@@ -2,7 +2,33 @@
 # SPDX-License-Identifier: GPL-2.0
 
 function steamos_select_branch {
-  logger "info: SteamOS select branch called: $@"
+  # We just have a single branch.
+  local single_branch="Gentoo"
+
+  local mode
+
+  if [[ -z "${1}" ]]; then
+    logger --priority user.err "error: SteamOS select branch: missing mode"
+
+    return 1
+  fi
+
+  mode="${1}"
+
+  shift
+
+  case "${mode}" in
+    "-c" )
+      echo "${single_branch}" ;;
+
+    "-l" )
+      echo "${single_branch}" ;;
+
+    * )
+      logger --priority user.err "error: SteamOS select branch: invalid mode: ${mode}"
+
+      return 2 ;;
+  esac
 
   return 0
 }
