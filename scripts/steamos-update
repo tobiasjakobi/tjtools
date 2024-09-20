@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
+
+function steamos_update {
+  local update_check=0
+  local argument
+
+  while true; do
+    if [[ -z "${1}" ]]; then
+      break
+    fi
+
+    argument="${1}"
+    shift
+
+    case "${argument}" in
+      "--supports-duplicate-detection" )
+      "--enable-duplicate-detection" )
+        logger "info: SteamOS update: argument: ${argument}" ;;
+
+      "check" )
+        update_check=1 ;;
+
+      * )
+        logger --priority user.err "error: SteamOS update: invalid argument: ${argument}" ;;
+    esac
+  done
+
+  if [[ ${update_check} -eq 1 ]]; then
+    logger "info: SteamOS update: checking for update..."
+
+    # Indicate that there is no update available.
+    return 7
+  else
+    logger --priority user.err "error: SteamOS update: client wants to perform update"
+
+    return 1
+  fi
+
+  return 0
+}
+
+steamos_update "$@"

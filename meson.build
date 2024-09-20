@@ -330,6 +330,7 @@ scripts = [
   'steam-gamepadui-session',
   'steamos-select-branch',
   'steamos-session-select',
+  'steamos-update',
   'sway_appmenu.sh',
   'sway-session',
   'sysfs_write.sh',
