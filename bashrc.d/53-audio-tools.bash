@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0
+#
 # Bash functions for handling of audio files.
 
 ## Helpers

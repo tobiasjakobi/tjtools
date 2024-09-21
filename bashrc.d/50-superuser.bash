@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0
+#
 # Bash functions mainly intended for the superuser of the system.
 
 ## Helpers

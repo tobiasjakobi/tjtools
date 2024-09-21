@@ -1,3 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+#
+# Bash functions intended for regular users of the system.
+
+## Helpers
+
 function __vnc_internal {
   local outer_funcname
   local vnc_host
@@ -25,6 +31,8 @@ function __vnc_internal {
       echo "Usage: ${outer_funcname} --spawn|--connect|--exit" ;;
   esac
 }
+
+## Bash functions
 
 function audioserver_bs2b {
   local profile

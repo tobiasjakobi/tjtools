@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0
+#
 # Bash functions just are thin wrappers around other functions, CLI tools, application, etc.
 
 function albion {
