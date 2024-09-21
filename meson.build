@@ -13,6 +13,7 @@ dep_dl = cc.find_library('dl', required : true)
 
 install_prefix = get_option('prefix')
 install_bindir = get_option('bindir')
+install_sbindir = get_option('sbindir')
 
 systemd = dependency('systemd')
 systemd_system_unit_dir = systemd.get_variable('systemdsystemunitdir')
@@ -330,10 +331,13 @@ scripts = [
   'steam-gamepadui-session',
   'steamos-select-branch',
   'steamos-session-select',
-  'steamos-update',
   'sway_appmenu.sh',
   'sway-session',
   'sysfs_write.sh',
+]
+
+superuser_scripts = [
+  'steamos-update',
 ]
 
 bashrc_d_files = [
@@ -348,6 +352,14 @@ foreach s : scripts
     'scripts' / s,
     install_mode : 'rwxr-xr-x',
     install_dir : install_prefix / install_bindir
+  )
+endforeach
+
+foreach s : superuser_scripts
+  install_data(
+    'scripts' / s,
+    install_mode : 'rwxr-xr-x',
+    install_dir : install_prefix / install_sbindir
   )
 endforeach
 
