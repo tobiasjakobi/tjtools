@@ -244,7 +244,6 @@ function envconfig {
   esac
 }
 
-
 function guess_textenc {
   local guesses=(
     "utf16le"
@@ -398,6 +397,64 @@ function launch_game {
       echo -e "\t --ut99"
        ;;
   esac
+}
+
+# File moving with rename:
+# - argument 1: source file
+# - argument 2: destination directory
+# - argument 3: string replacement source
+# - argument 4: string replacement destination
+function move_rename {
+  local source_file
+  local destination_directory
+  local replacement_source
+  local replacement_destination
+
+  local source_base
+  local destination
+
+  if [[ ! -f "${1}" ]]; then
+    echo "error: source is not a file: ${1}"
+
+    return 1
+  fi
+
+  source_file="${1}"
+
+  if [[ ! -d "${2}" ]]; then
+    echo "error: destination is not a directory: ${2}"
+
+    return 2
+  fi
+
+  destination_directory="${2}"
+
+  if [[ -z "${3}" ]]; then
+    echo "error: missing string replacement source"
+
+    return 3
+  fi
+
+  replacement_source="${3}"
+
+  if [[ -z "${4}" ]]; then
+    echo "error: missing string replacement destination"
+
+    return 4
+  fi
+
+  replacement_destination="${4}"
+
+  source_base=$(basename "${source_file}")
+  destination="${source_base/${replacement_source}/${replacement_destination}}"
+
+  if [[ -e "${destination_directory}/${destination}" ]]; then
+    echo "error: destination already exists: ${destination_directory}/${destination}"
+
+    return 5
+  fi
+
+  mv "${source_file}" "${destination_directory}/${destination}"
 }
 
 # Convert MSF values to byte indices that can then be feed into shnsplit.
