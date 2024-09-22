@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+function jupiter_biosupdate {
+  logger "info: Jupiter BIOS update called: $@"
+
+  # Always return success.
+  return 0
+}
+
+jupiter_biosupdate "$@"

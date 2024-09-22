@@ -337,6 +337,7 @@ scripts = [
 ]
 
 superuser_scripts = [
+  'jupiter-biosupdate',
   'steamos-update',
 ]
 
