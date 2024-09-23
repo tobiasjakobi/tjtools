@@ -308,6 +308,7 @@ scripts = [
   'backup_bootstrap.sh',
   'build_old_samba.sh',
   'copy_merge.sh',
+  'delayed_modprobe.sh',
   'detect_display.sh',
   'easy_data_nc_rx.sh',
   'easy_data_nc_tx.sh',
