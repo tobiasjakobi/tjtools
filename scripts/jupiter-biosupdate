@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
 
 function jupiter_biosupdate {
   logger "info: Jupiter BIOS update called: $@"
