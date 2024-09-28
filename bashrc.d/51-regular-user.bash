@@ -22,7 +22,7 @@ function __vnc_internal {
       ssh -L 15900:localhost:5900 "${vnc_host}" "env WAYLAND_DISPLAY=wayland-1 wayvnc --keyboard=de-nodeadkeys --render-cursor --gpu 127.0.0.1 5900" ;;
 
     "--connect" )
-      env VNC_USERNAME="${vnc_username}" VNC_PASSWORD="${vnc_password}" vncviewer localhost::15900 ;;
+      env VNC_USERNAME="${vnc_username}" VNC_PASSWORD="${vnc_password}" vncviewer -FullscreenSystemKeys localhost::15900 ;;
 
     "--exit" )
       ssh "${vnc_host}" "wayvncctl wayvnc-exit" ;;
