@@ -5,71 +5,80 @@ set -e
 set -u
 
 function print_usage {
-  echo "Usage: ${0} [--split=<splitsize>] [--prefix=<filename-prefix>] [--location=<output-location>] <directory>"
+  echo "Usage: ${1} [--split=<splitsize>] [--prefix=<filename-prefix>] [--location=<output-location>] <directory>"
 }
 
 function 7z_simple {
-  local split prefix location arg
+  local split="--split="
+  local prefix="--prefix="
+  local location="--location="
 
-  local filebase working
-  local current opts
+  local split_value=
+  local prefix_value=
+  local location_value=
+  local input_directory=
+  local options=
 
-  if [[ -z "${1}" ]]; then
-    print_usage
+  local filebase
+  local working
+  local current
+
+  if [[ $# -eq 0 ]]; then
+    print_usage "${0}"
 
     return 1
   fi
 
   while [[ $# -ne 0 ]]; do
     case "${1}" in
-      "--split="* )
-        split=${1#'--split='} ;;
+      "${split}"* )
+        split_value="${1#${split}}" ;;
 
-      "--prefix="* )
-        prefix=${1#'--prefix='} ;;
+      "${prefix}"* )
+        prefix_value="${1#${prefix}}" ;;
 
-      "--location="* )
-        location=${1#'--location='} ;;
+      "${location}"* )
+        location_value="${1#${location}}" ;;
 
       * )
-        arg=${1} ;;
+        input_directory="${1}" ;;
     esac
 
     shift
   done
 
-  if [[ -z "${arg}" ]]; then
+  if [[ -z "${input_directory}" ]]; then
     echo "error: directory argument missing"
-    print_usage
+    print_usage "${0}"
 
     return 2
   fi
 
-  if [[ ! -d "${arg}" ]]; then
-    echo "error: directory not found: ${arg}"
-    print_usage
+  if [[ ! -d "${input_directory}" ]]; then
+    echo "error: directory not found: ${input_directory}"
+    print_usage "${0}"
 
     return 3
   fi
 
-  filebase=$(basename "${arg}")
-  working=$(dirname "${arg}")
-  current=$(realpath .)
-
-  if [[ -n "${split}" ]]; then
-    opts="-v${split}"
+  if [[ -n "${split_value}" ]]; then
+    options="-v${split_value}"
   fi
 
-  if [[ -n "${location}" ]]; then
-    if [[ -d "${location}" ]]; then
-      current=$(realpath "${location}")
+  filebase=$(basename "${input_directory}")
+  working=$(dirname "${input_directory}")
+  current=$(realpath "${PWD}")
+
+  if [[ -n "${location_value}" ]]; then
+    if [[ -d "${location_value}" ]]; then
+      current=$(realpath "${location_value}")
     else
-      echo "info: output location not found, ignoring: ${location}"
+      echo "info: output location not found, ignoring: ${location_value}"
     fi
   fi
 
   pushd "${working}" > /dev/null
-    7z a -bd -t7z -mx=9 -m0=lzma2 ${opts} "${current}/${prefix}${filebase}.7z" "${filebase}"
+    7z a -bd -t7z -mx=9 -m0=lzma2 ${options} "${current}/${prefix_value}${filebase}.7z" "${filebase}"
   popd > /dev/null
 }
 
