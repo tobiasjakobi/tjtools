@@ -20,7 +20,7 @@ function 7z_simple {
     return 1
   fi
 
-  while [[ -n "${1}" ]]; do
+  while [[ $# -ne 0 ]]; do
     case "${1}" in
       "--split="* )
         split=${1#'--split='} ;;
