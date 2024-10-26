@@ -325,6 +325,7 @@ scripts = [
   'kdump_recv.sh',
   'linux_maintainers.sh',
   'net_ps2.sh',
+  'openvpn_netdev.sh',
   'pinentry.sh',
   'remount_storage.sh',
   'resume_wrapper.sh',
