@@ -7,7 +7,7 @@ function albion {
 }
 
 function audioserver_openvpn {
-  ssh -t audioserver "sudo openvpn.sh $@"
+  ssh audioserver "systemctl openvpn $@ openvpn-server@server.service"
 }
 
 function audioserver_pavucontrol {
