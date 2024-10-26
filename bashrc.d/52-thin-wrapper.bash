@@ -12,7 +12,7 @@ function audioserver_openvpn {
 
 function audioserver_pavucontrol {
   pkill --exact pavucontrol
-  PULSE_SERVER=audioserver pavucontrol
+  PULSE_SERVER=tcp4:audioserver.entropy pavucontrol
 }
 
 function audioserver_poweroff {
@@ -69,21 +69,21 @@ function protonkill {
 function qt_duckstation {
   local cfg=$(cat ${HOME}/local/xpadneo-sdl.conf)
 
-  SDL_JOYSTICK_HIDAPI=0 SDL_GAMECONTROLLERCONFIG="${cfg}" PULSE_SERVER=audioserver duckstation-qt
+  SDL_JOYSTICK_HIDAPI=0 SDL_GAMECONTROLLERCONFIG="${cfg}" PULSE_SERVER=tcp4:audioserver.entropy duckstation-qt
 }
 
 function qt_higan {
-  PULSE_SERVER=audioserver QT_QPA_PLATFORM=xcb higan
+  PULSE_SERVER=tcp4:audioserver.entropy QT_QPA_PLATFORM=xcb higan
 }
 
 function qt_mgba {
   local cfg=$(cat ${HOME}/local/xpadneo-sdl.conf)
 
-  SDL_JOYSTICK_HIDAPI=0 SDL_GAMECONTROLLERCONFIG="${cfg}" PULSE_SERVER=audioserver QT_QPA_PLATFORM=xcb mgba-qt
+  SDL_JOYSTICK_HIDAPI=0 SDL_GAMECONTROLLERCONFIG="${cfg}" PULSE_SERVER=tcp4:audioserver.entropy QT_QPA_PLATFORM=xcb mgba-qt
 }
 
 function qt_yuzu {
-  PULSE_SERVER=audioserver QT_QPA_PLATFORM=xcb yuzu
+  PULSE_SERVER=tcp4:audioserver.entropy QT_QPA_PLATFORM=xcb yuzu
 }
 
 function space3 {
