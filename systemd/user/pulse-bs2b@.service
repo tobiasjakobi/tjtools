@@ -1,0 +1,6 @@
+[Unit]
+# Supported profiles are: default, chu-moy, jan-meier
+Description=Headphone bs2b crossfeed for PulseAudio (%i profile)
+
+[Service]
+ExecStart=pulse_bs2b.sh %i
