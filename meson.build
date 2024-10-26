@@ -187,6 +187,7 @@ polkit_rules = [
   '12-iscsi-ctrl.rules',
   '13-cpu-powerlimit.rules',
   '14-xbox360-disable.rules',
+  '15-openvpn-server.rules',
 ]
 
 
