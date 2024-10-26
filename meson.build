@@ -328,6 +328,7 @@ scripts = [
   'net_ps2.sh',
   'openvpn_netdev.sh',
   'pinentry.sh',
+  'pulse_bs2b.sh',
   'remount_storage.sh',
   'resume_wrapper.sh',
   'session_helper.sh',
