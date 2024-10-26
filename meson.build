@@ -158,7 +158,7 @@ system_unit_files = [
 user_unit_files = [
   'clean_bashhistory.service',
   'clean_bashhistory.timer',
-  'pulse-bs2b.service',
+  'pulse-bs2b@.service',
   'virtual-keyboard.service',
 ]
 
