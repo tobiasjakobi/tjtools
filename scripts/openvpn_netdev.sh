@@ -23,7 +23,7 @@ function openvpn_netdev {
     return 2
   fi
 
-  /usr/sbin/openvpn --local "${netdev_addr}" "$@"
+  exec /usr/sbin/openvpn --local "${netdev_addr}" "$@"
 }
 
 openvpn_netdev "$@"
