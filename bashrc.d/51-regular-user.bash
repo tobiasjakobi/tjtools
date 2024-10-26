@@ -62,12 +62,12 @@ function audioserver_bs2b {
   esac
 
   if [[ -z "${profile}" ]]; then
-    cmd="systemctl --user stop pulse-bs2b@default pulse-bs2b@chu-moy pulse-bs2b@jan-meier"
+    cmd="systemctl --user stop pulse-bs2b@default.service pulse-bs2b@chu-moy.service pulse-bs2b@jan-meier.service"
   else
-    cmd="systemctl --user start pulse-bs2b@${profile}"
+    cmd="systemctl --user start pulse-bs2b@${profile}.service"
   fi
 
-  echo "${cmd}" | ssh audioserver "bash -s"
+  ssh audioserver "${cmd}"
 }
 
 function bluray_master {
