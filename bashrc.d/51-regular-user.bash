@@ -11,7 +11,7 @@ function __vnc_internal {
   outer_funcname="${1}"
   vnc_host="${2}"
 
-  shift 4
+  shift 2
 
   case "${1}" in
     "--spawn" )
