@@ -390,7 +390,7 @@ function m3u_create {
   # Strip the postfix and create M3U base.
   m3u_base=${directory_name%"${pathpostfix}"}
 
-  echo "${filelist}" | while read line; do
+  echo "${files}" | while read line; do
     basename "${line}"
   done > "${working_dir}/${prefix} ${m3u_base}.m3u"
 
