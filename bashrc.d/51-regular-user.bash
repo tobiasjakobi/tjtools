@@ -20,6 +20,9 @@ function __vnc_internal {
     "--connect" )
       vncviewer -FullscreenSystemKeys localhost::15900 ;;
 
+    "--forward-only" )
+      ssh -N -o ExitOnForwardFailure=yes -L 15900:localhost:5900 "${vnc_host}" ;;
+
     "--exit" )
       ssh "${vnc_host}" "wayvncctl wayvnc-exit" ;;
 
