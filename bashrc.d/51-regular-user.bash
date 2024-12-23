@@ -27,7 +27,7 @@ function __vnc_internal {
       ssh "${vnc_host}" "wayvncctl wayvnc-exit" ;;
 
     * )
-      echo "Usage: ${outer_funcname} --spawn|--connect|--exit" ;;
+      echo "Usage: ${outer_funcname} --spawn|--connect|--forward-only|--exit" ;;
   esac
 }
 
