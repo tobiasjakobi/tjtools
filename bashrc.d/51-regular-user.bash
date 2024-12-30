@@ -5,23 +5,39 @@
 ## Helpers
 
 function __vnc_internal {
+  local remote_port=5900
+  local local_port=15900
+
   local outer_funcname
   local vnc_host
+  local capture_output
+
+  local additional_args
+  local remote_cmd
 
   outer_funcname="${1}"
   vnc_host="${2}"
+  capture_output="${3}"
 
-  shift 2
+  shift 3
+
+  if [[ -n "${capture_output}" ]]; then
+    additional_args="--output=${capture_output}"
+  else
+    additional_args=""
+  fi
+
+  remote_cmd="env WAYLAND_DISPLAY=wayland-1 wayvnc --keyboard=de-nodeadkeys --render-cursor --gpu ${additional_args} 127.0.0.1 ${remote_port}"
 
   case "${1}" in
     "--spawn" )
-      ssh -L 15900:localhost:5900 "${vnc_host}" "env WAYLAND_DISPLAY=wayland-1 wayvnc --keyboard=de-nodeadkeys --render-cursor --gpu 127.0.0.1 5900" ;;
+      ssh -L ${local_port}:localhost:${remote_port} "${vnc_host}" "${remote_cmd}" ;;
 
     "--connect" )
-      vncviewer -FullscreenSystemKeys localhost::15900 ;;
+      vncviewer -FullscreenSystemKeys localhost::${local_port} ;;
 
     "--forward-only" )
-      ssh -N -o ExitOnForwardFailure=yes -L 15900:localhost:5900 "${vnc_host}" ;;
+      ssh -N -o ExitOnForwardFailure=yes -L ${local_port}:localhost:${remote_port} "${vnc_host}" ;;
 
     "--exit" )
       ssh "${vnc_host}" "wayvncctl wayvnc-exit" ;;
