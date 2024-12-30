@@ -10,6 +10,7 @@ function __vnc_internal {
 
   local outer_funcname
   local vnc_host
+  local cmd
   local capture_output
 
   local additional_args
@@ -17,9 +18,10 @@ function __vnc_internal {
 
   outer_funcname="${1}"
   vnc_host="${2}"
-  capture_output="${3}"
+  cmd="${3}"
+  capture_output="${4}"
 
-  shift 3
+  shift 4
 
   if [[ -n "${capture_output}" ]]; then
     additional_args="--output=${capture_output}"
@@ -29,7 +31,7 @@ function __vnc_internal {
 
   remote_cmd="env WAYLAND_DISPLAY=wayland-1 wayvnc --keyboard=de-nodeadkeys --render-cursor --gpu ${additional_args} 127.0.0.1 ${remote_port}"
 
-  case "${1}" in
+  case "${cmd}" in
     "--spawn" )
       ssh -L ${local_port}:localhost:${remote_port} "${vnc_host}" "${remote_cmd}" ;;
 
