@@ -2,9 +2,9 @@ SUBSYSTEM!="usb", GOTO="android_phone_end"
 ACTION=="remove", GOTO="android_phone_end"
 
 # Android phones:
-# - Moto G8 Plus
 # - Oppo A74 5G
-ATTR{idVendor}=="22b8", ATTR{idProduct}=="2e81", MODE="0660", GROUP="plugdev"
+# - Motorola Edge 30 (dubai)
 ATTR{idVendor}=="22d9", ATTR{idProduct}=="2765", MODE="0660", GROUP="plugdev"
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="2e80", MODE="0660", GROUP="plugdev"
 
 LABEL="android_phone_end"
