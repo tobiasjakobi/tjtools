@@ -33,12 +33,14 @@ function __vnc_internal {
 
   case "${cmd}" in
     "--spawn" )
+      rm --force ${remote_socket}
       ssh -L ${remote_socket}:${unix_socket} "${vnc_host}" "${remote_cmd}" ;;
 
     "--connect" )
       vncviewer -FullscreenSystemKeys ${remote_socket} ;;
 
     "--forward-only" )
+      rm --force ${remote_socket}
       ssh -N -o ExitOnForwardFailure=yes -L ${remote_socket}:${unix_socket} "${vnc_host}" ;;
 
     "--exit" )
