@@ -14,8 +14,7 @@ function steamos_update {
     shift
 
     case "${argument}" in
-      "--supports-duplicate-detection" )
-      "--enable-duplicate-detection" )
+      "--supports-duplicate-detection"|"--enable-duplicate-detection" )
         logger "info: SteamOS update: argument: ${argument}" ;;
 
       "check" )
