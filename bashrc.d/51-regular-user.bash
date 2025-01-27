@@ -320,7 +320,7 @@ function guess_textenc {
       return 0 ;;
 
      * )
-       echo "info: text encoding from MIME inconclusive" ;;
+       echo "warn: text encoding from MIME inconclusive" ;;
   esac
 
   idx=0
@@ -734,7 +734,7 @@ function xvpn {
 
     * )
       echo "Usage: ${FUNCNAME} --start|--stop|--status"
- 
+
       return 1 ;;
   esac
 }
