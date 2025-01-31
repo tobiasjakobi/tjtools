@@ -4,6 +4,18 @@
 
 ## Helpers
 
+function __has_utf8_bom {
+  local header
+
+  header=$(head --bytes=3 "${1}")
+
+  if [[ "${header}" != $'\xef\xbb\xbf' ]]; then
+    return 1
+  fi
+
+  return 0
+}
+
 function __decode_to_pcm_wav {
   local ident="${HOME}/local/bin/mpv_identify.sh"
 
@@ -15,7 +27,7 @@ function __decode_to_pcm_wav {
   local audio_codec_name
   local codec
 
-  input_file="${1}"
+  input_file=$(realpath "${1}")
   tmp_dir="${2}"
 
   needs_decoding=0
@@ -84,6 +96,7 @@ function __cuesheet_check {
   local cuesheet_info
   local cuesheet_type
   local cuesheet_encoding
+  local split_errors
   local errcode
 
   cuesheet_info=$(file --dereference --brief --mime "${cuesheet_file}")
@@ -113,13 +126,25 @@ function __cuesheet_check {
       return 2 ;;
   esac
 
-  __cuesheet_to_splitpoints "${cuesheet_file}" > /dev/null 2> /dev/null
+  if __has_utf8_bom "${cuesheet_file}"; then
+    echo "error: cuesheet has UTF8 BOM (unsupported)"
+
+    return 3
+  fi
+
+  split_errors=$(__cuesheet_to_splitpoints "${cuesheet_file}" 2>&1 > /dev/null)
   errcode=$?
 
   if [[ ${errcode} -ne 0 ]]; then
     echo "error: parsing cuesheet failed: ${errcode}"
 
-    return 3
+    return 4
+  fi
+
+  if [[ -n "${split_errors}" ]]; then
+    echo "error: unknown error occured during split"
+
+    return 5
   fi
 
   return 0
@@ -484,23 +509,34 @@ function split_cue_lossless {
 
   echo "info: input/output filename base is: ${input_base}"
 
-  local -
-  set -e
-
   __cuesheet_check "${cuesheet_file}"
-  __decode_to_pcm_wav "${input_file}" "${tmp_dir}"
-  __cuesheet_to_splitpoints "${cuesheet_file}" | shnsplit -q -d "${tmp_dir}" -- "${tmp_dir}"/input.wav
+  errcode=$?
 
-  rm "${tmp_dir}"/input.wav
+  if [[ ${errcode} -ne 0 ]]; then
+    echo "error: cuesheet check failed: ${errcode}"
 
-  flac_encode "${tmp_dir}"
+    return 4
+  fi
 
-  find "${tmp_dir}" -regextype posix-egrep -regex ".*split\-track[0-9]+\.wav" -exec rm {} \;
+  # We execute this in a subshell where we enable "set -e"
+  # so that we can simplify the error handling.
+  (
+    set -e
 
-  find "${tmp_dir}" -regextype posix-egrep -regex ".*split\-track[0-9]+\.flac" | \
-  while read arg; do
-    move_rename "${arg}" "${input_directory}" "split" "${input_base}"
-  done
+    __decode_to_pcm_wav "${input_file}" "${tmp_dir}"
+    __cuesheet_to_splitpoints "${cuesheet_file}" | shnsplit -q -d "${tmp_dir}" -- "${tmp_dir}"/input.wav
 
-  rmdir "${tmp_dir}"
+    rm "${tmp_dir}"/input.wav
+
+    flac_encode "${tmp_dir}"
+
+    find "${tmp_dir}" -regextype posix-egrep -regex ".*split\-track[0-9]+\.wav" -delete
+
+    find "${tmp_dir}" -regextype posix-egrep -regex ".*split\-track[0-9]+\.flac" | \
+    while read arg; do
+      move_rename "${arg}" "${input_directory}" "split" "${input_base}"
+    done
+
+    rmdir "${tmp_dir}"
+  )
 }
