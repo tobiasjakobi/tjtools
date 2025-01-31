@@ -5,11 +5,14 @@
 ## Helpers
 
 function __decode_to_pcm_wav {
+  local ident="${HOME}/local/bin/mpv_identify.sh"
+
   local input_file
   local tmp_dir
 
   local errcode
   local needs_decoding
+  local audio_codec_name
   local codec
 
   input_file="${1}"
@@ -17,8 +20,8 @@ function __decode_to_pcm_wav {
 
   needs_decoding=0
 
-  source "${HOME}"/local/bin/mpv_identify.sh id_ "${input_file}"
-  codec=$(echo "${id_audio_codec_name}" | cut -d' ' -f1)
+  audio_codec_name=$(source "${ident}" id_ "${input_file}"; echo "${id_audio_codec_name}")
+  codec=$(echo "${audio_codec_name}" | cut -d' ' -f1)
 
   case "${codec}" in
     "pcm_s16le" )
@@ -50,7 +53,7 @@ function __decode_to_pcm_wav {
       needs_decoding=1 ;;
 
     * )
-      echo "error: unknown input format: ${id_audio_codec_name}"
+      echo "error: unknown input format: ${audio_codec_name}"
 
       return 1 ;;
   esac
