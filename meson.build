@@ -89,7 +89,7 @@ evdev_keepalive_source_files = [
 ]
 
 extract_bmi260_fw_source_files = [
-  'src/extract_bmi260_fw.pp',
+  'src/extract_bmi260_fw.cpp',
 ]
 
 notify_wrapper_source_files = [
