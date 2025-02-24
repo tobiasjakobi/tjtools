@@ -88,6 +88,10 @@ evdev_keepalive_source_files = [
   'src/evdev_keepalive.c',
 ]
 
+extract_bmi260_fw_source_files = [
+  'src/extract_bmi260_fw.pp',
+]
+
 notify_wrapper_source_files = [
   'src/notify_wrapper.c',
 ]
@@ -262,6 +266,12 @@ container = executable(
 evdev_keepalive = executable(
   'evdev_keepalive',
   evdev_keepalive_source_files,
+  install : true,
+)
+
+extract_bmi260_fw = executable(
+  'extract_bmi260_fw',
+  extract_bmi260_fw_source_files,
   install : true,
 )
 
