@@ -61,6 +61,14 @@ awinic_detect_dependencies = [
   cc.find_library('libi2c', required : true),
 ]
 
+amd_microcode_source_files = [
+  'src/amd_microcode.cpp',
+]
+
+amd_microcode_dependencies = [
+  cc.find_library('libcrypto', required : true),
+]
+
 brightness_daemon_source_files = [
   'src/brightness_utils/common.cpp',
   'src/brightness_daemon.cpp',
@@ -234,6 +242,13 @@ active_user = shared_library(
   soversion : active_user_soversion,
   c_args : library_build_args,
   gnu_symbol_visibility : 'hidden',
+)
+
+amd_microcode = executable(
+  'amd_microcode',
+  amd_microcode_source_files,
+  dependencies : amd_microcode_dependencies,
+  install : true,
 )
 
 awinic_detect = executable(
