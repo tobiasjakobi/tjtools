@@ -154,8 +154,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     }
 
     const auto len = statbuf.st_size;
+    if (len <= 0) {
+        throw std::runtime_error{"empty file"};
+    }
 
-    auto available_bytes = len;
+    auto available_bytes = static_cast<std::size_t>(len);
 
     if (available_bytes < sizeof(OuterHeader)) {
         throw std::runtime_error{"no outer header"};
