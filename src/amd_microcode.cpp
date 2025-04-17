@@ -19,13 +19,13 @@ namespace detail {
 
     namespace UCode {
 
-        // TODO: desc
+        // Expected magic found in the outer header.
         static constexpr std::uint32_t kMagic{0x414d44};
 
-        // TOOD: desc
+        // Table type for equiv CPU table.
         static constexpr std::uint32_t kEquivCPUTableType{0x0};
 
-        // TODO: desc
+        // UCode patch type found in the inner header.
         static constexpr std::uint32_t kUCodeType{0x1};
 
     } // namespace UCode
@@ -244,7 +244,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
         mc.mchdr = reinterpret_cast<const MicrocodeHeader *>(mc.payload.data());
 
         const auto cout_flags = std::cout.flags();
-        std::cout << "patch_id=0x" << std::hex << mc.mchdr->patch_id << std::endl;
+        std::cout << "installed_cpu=0x" << std::hex << it.installed_cpu
+                  << "\npatch_id=0x" << mc.mchdr->patch_id << std::endl;
         std::cout.flags(cout_flags);
 
         print_sha256(mc.payload.data(), mc.hdr.patch_size);
