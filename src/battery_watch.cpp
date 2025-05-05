@@ -137,6 +137,12 @@ namespace BatteryWatch {
         }
 
         bool is_critical(float treshold) const {
+            // If we are below half the treshold, ignore the charging state and
+            // signal critical state directly.
+            if (charge_level_ * 100.0f < treshold * 0.5f) {
+                return true;
+            }
+
             if (state_ != State::Discharging) {
                 return false;
             }
