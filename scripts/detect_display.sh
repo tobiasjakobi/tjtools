@@ -4,20 +4,26 @@
 function detect_display {
   local preferred_output
   local dp_status
+  local outputs
 
   source /etc/sway/wayland-environment
 
   preferred_output="${GAMESCOPE_PREFERRED_OUTPUT}"
+  if [[ -z "${preferred_output}" ]]; then
+    return
+  fi
 
-  if [[ -n "${preferred_output}" ]]; then
-    dp_status="/sys/class/drm/card0-${preferred_output}/status"
+  # Split into array so that we can easier loop over it.
+  IFS=',' read -a outputs <<<"${preferred_output}"
+  for output in "${outputs[@]}"; do
+    dp_status="/sys/class/drm/card0-${output}/status"
 
     if [[ -f "${dp_status}" ]]; then
-      echo "info: performing re-detect of external display: ${preferred_output}"
+      echo "info: performing re-detect of external display: ${output}"
 
       echo -n detect > ${dp_status}
     fi
-  fi
+  done
 }
 
 detect_display "$@"
