@@ -3,8 +3,8 @@
 #define BOOST_PROCESS_USE_STD_FS
 
 #include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/process/child.hpp>
-#include <boost/process/io.hpp>
+#include <boost/process/v1/child.hpp>
+#include <boost/process/v1/io.hpp>
 #include <boost/program_options.hpp>
 #include <nlohmann/json.hpp>
 #include <unistd.h>
@@ -45,7 +45,7 @@ namespace CPUPowerlimit {
     class LimitProfile {
     public:
         void apply() const {
-            namespace bp = boost::process;
+            namespace bp = boost::process::v1;
 
             std::vector<std::string> args{
                 std::string{"--stapm-limit="} + limit_scale(stapm_limit_),

@@ -2,8 +2,8 @@
 
 #include "common_utils/scope_guard.h"
 
-#include <boost/process/child.hpp>
-#include <boost/process/io.hpp>
+#include <boost/process/v1/child.hpp>
+#include <boost/process/v1/io.hpp>
 #include <boost/program_options.hpp>
 #include <curl/curl.h>
 #include <fmt/format.h>
@@ -29,7 +29,7 @@ namespace detail {
 
 namespace Container {
 
-    namespace bp = boost::process;
+    namespace bp = boost::process::v1;
     namespace fs = std::filesystem;
 
     using namespace std::string_view_literals;
