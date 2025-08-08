@@ -1,33 +1,37 @@
 ACTION=="remove", GOTO="optical_drives_end"
+SUBSYSTEM!="block", GOTO="optical_drives_end"
 
 # Mark block devices that are backed by real hardware (AHCI/NVME).
-SUBSYSTEM=="block", SUBSYSTEMS=="pci", DRIVERS=="ahci|nvme", ENV{OPTICAL_DRIVE_TYPE}="physical"
+SUBSYSTEMS=="pci", DRIVERS=="ahci|nvme", ENV{OPTICAL_DRIVE_TYPE}="physical"
 
-SUBSYSTEM=="block", ENV{OPTICAL_DRIVE_TYPE}!="physical", GOTO="optical_drives_physical_end"
+ENV{OPTICAL_DRIVE_TYPE}!="physical", GOTO="optical_drives_physical_end"
 
 # Create symlinks for local optical drives:
 # - external Samsung SN-506BB (BluRay, SlimLine, external)
 # - Pioneer BDR-212EBK (BluRay, full-sized, internal)
 # - Hitachi WH16NS60 (BluRay, full-sized, internal)
-# - virtual CDEmu drive
-SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="TSSTcorp", ATTRS{model}=="BDDVDW SN-506BB", ATTRS{rev}=="SB00", SYMLINK+="optical/samsung"
-SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="PIONEER", ATTRS{model}=="BD-RW   BDR-212M", ATTRS{rev}=="1.02", SYMLINK+="optical/pioneer"
-SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="HL-DT-ST", ATTRS{model}=="BD-RE  WH16NS60", ATTRS{rev}=="1.03", SYMLINK+="optical/hitachi"
-SUBSYSTEM=="block", ENV{ID_CDROM}=="?*", ATTRS{vendor}=="CDEmu", ATTRS{model}=="CD-ROM", ATTRS{rev}=="1.0", SYMLINK+="optical/virt"
+ENV{ID_CDROM}=="?*", ATTRS{vendor}=="TSSTcorp", ATTRS{model}=="BDDVDW SN-506BB", ATTRS{rev}=="SB00", SYMLINK+="optical/samsung"
+ENV{ID_CDROM}=="?*", ATTRS{vendor}=="PIONEER", ATTRS{model}=="BD-RW   BDR-212M", ATTRS{rev}=="1.02", SYMLINK+="optical/pioneer"
+ENV{ID_CDROM}=="?*", ATTRS{vendor}=="HL-DT-ST", ATTRS{model}=="BD-RE  WH16NS60", ATTRS{rev}=="1.03", SYMLINK+="optical/hitachi"
 
 # Create symlinks for generic SCSI nodes of some local optical drives:
+SUBSYSTEM=="scsi_generic", ATTRS{vendor}=="TSSTcorp", ATTRS{model}=="BDDVDW SN-506BB", ATTRS{rev}=="SB00", SYMLINK+="sg_samsung"
 SUBSYSTEM=="scsi_generic", ATTRS{vendor}=="PIONEER", ATTRS{model}=="BD-RW   BDR-212M", ATTRS{rev}=="1.02", SYMLINK+="sg_pioneer"
 SUBSYSTEM=="scsi_generic", ATTRS{vendor}=="HL-DT-ST", ATTRS{model}=="BD-RE  WH16NS60", ATTRS{rev}=="1.03", SYMLINK+="sg_hitachi"
 
 LABEL="optical_drives_physical_end"
 
-SUBSYSTEM=="block", ENV{OPTICAL_DRIVE_TYPE}=="physical", GOTO="optical_drives_remote_end"
+ENV{OPTICAL_DRIVE_TYPE}=="physical", GOTO="optical_drives_remote_end"
 
 # Create symlinks for remote optical drives:
 # - Pioneer BDR-212EBK (BluRay) @ audioserver (iSCSI)
 # - Hitachi WH16NS60 (BluRay) @ audioserver (iSCSI)
 ENV{ID_CDROM}=="?*", ATTRS{vendor}=="PIONEER", ATTRS{model}=="BD-RW   BDR-212M", ATTRS{rev}=="1.02", SYMLINK+="optical/aserverp"
 ENV{ID_CDROM}=="?*", ATTRS{vendor}=="HL-DT-ST", ATTRS{model}=="BD-RE  WH16NS60", ATTRS{rev}=="1.03", SYMLINK+="optical/aserverh"
+
+# Create symlinks for virtual optical drives:
+# - virtual CDEmu drive
+ENV{ID_CDROM}=="?*", ATTRS{vendor}=="CDEmu", ATTRS{model}=="CD-ROM", ATTRS{rev}=="1.0", SYMLINK+="optical/virt"
 
 LABEL="optical_drives_remote_end"
 
