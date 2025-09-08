@@ -166,6 +166,21 @@ function cmus_status {
   echo "${output}"
 }
 
+function code_wl {
+  local code_args=(
+    "--ozone-platform-hint=auto"
+    "--enable-wayland-ime"
+    "--use-gl=egl"
+  )
+
+  # Use user-provided DRM render mode if available.
+  if [[ -n "${GPU_INTEGRATED_DRM_NODE}" ]]; then
+    code_args+=("--render-node-override=${GPU_INTEGRATED_DRM_NODE}")
+  fi
+
+  vscode "${code_args[@]}" -- "$@"
+}
+
 # Convert file with CRLF (carriage return / line feed) endings to normal LF (unix style) endings.
 function convert_crlf {
   local output
