@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
 
     fd = open(buffer, O_RDONLY);
     if (fd < 0) {
-        fprintf(stderr, "error: failed to open: %s\n", buffer);
+        fprintf(stderr, "warn: failed to open: %s\n", buffer);
 
-        return -2;
+        return 0;
     }
 
     sigemptyset(&set);
