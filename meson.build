@@ -30,6 +30,7 @@ kdump_dir = get_option('sysconfdir') / 'kdump'
 
 conf = configuration_data()
 
+aecram_incdir = include_directories('aecram/include')
 
 ## Source files and dependencies
 
@@ -52,6 +53,15 @@ active_user_dependencies = [
 ]
 
 active_user_soversion = 1
+
+aecram_util_source_files = [
+  'src/aecram_util.cpp',
+]
+
+aecram_util_dependencies = [
+  dependency('boost', modules : ['program_options']),
+  dependency('fmt'),
+]
 
 awinic_detect_source_files = [
   'src/awinic_detect.c',
@@ -255,6 +265,14 @@ awinic_detect = executable(
   'awinic_detect',
   awinic_detect_source_files,
   dependencies : awinic_detect_dependencies,
+  install : true,
+)
+
+aecram_util = executable(
+  'aecram_util',
+  aecram_util_source_files,
+  dependencies : aecram_util_dependencies,
+  include_directories: aecram_incdir,
   install : true,
 )
 
