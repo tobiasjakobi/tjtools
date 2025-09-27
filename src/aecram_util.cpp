@@ -37,7 +37,7 @@ namespace AECRAM {
         }
 
         if (length > AECRAM_BUFFER_SIZE) {
-            throw std::runtime_error{"invalid lenght"};
+            throw std::runtime_error{"invalid length"};
         }
 
         const auto fd = ::open(::detail::kDevice, O_RDWR);
