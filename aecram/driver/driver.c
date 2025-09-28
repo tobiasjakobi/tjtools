@@ -25,6 +25,8 @@
 #include <linux/version.h>
 
 /**
+ * Inspired by: drivers/virt/vboxguest/vboxguest_linux.c
+ *
  * References:
  * - https://8051enthusiast.github.io/2021/07/05/001-EC_legacy.html
  * - https://github.com/8051enthusiast/at51
@@ -287,7 +289,7 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 			if (length != 0) {
 				ret = aecram_read_buffer(d, session->config, offset, length);
 				if (ret == 0) {
-					if (__copy_to_user(req->buffer, d->buffer, length) != length)
+					if (__copy_to_user(req->buffer, d->buffer, length) != 0)
 						ret = -EFAULT;
 				}
 			}
@@ -313,7 +315,7 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 				return -EINVAL;
 
 			if (length != 0) {
-				if (__copy_from_user(d->buffer, req->buffer, length) != length) {
+				if (__copy_from_user(d->buffer, req->buffer, length) != 0) {
 					ret = -EFAULT;
 				} else {
 					ret = aecram_write_buffer(d, session->config, offset, length);
