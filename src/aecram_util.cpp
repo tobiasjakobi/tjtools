@@ -31,8 +31,13 @@ namespace detail {
 
 namespace AECRAM {
 
+    template <typename T>
+    auto to_void(T x) {
+        return reinterpret_cast<void *>(static_cast<std::uintptr_t>(x));
+    }
+
     static void dump(std::size_t offset, std::size_t length) {
-        if (offset > std::numeric_limits<std::uint16_t>::max()) {
+        if (offset > std::numeric_limits<std::uint16_t>::max() - ::detail::kUnknownOffset) {
             throw std::runtime_error{"invalid offset"};
         }
 
@@ -51,9 +56,7 @@ namespace AECRAM {
 
         // Configure the AECRAM driver for Ayaneo devices.
         {
-            const int aecram_type = AECRAM_TYPE_AYANEO;
-
-            if (const auto ret = ::ioctl(fd, IOCTL_AECRAM_SET_TYPE, &aecram_type); ret < 0) {
+            if (const auto ret = ::ioctl(fd, IOCTL_AECRAM_SET_TYPE, to_void(AECRAM_TYPE_AYANEO)); ret < 0) {
                 const auto err = std::strerror(errno);
 
                 throw std::runtime_error{fmt::format("failed to set AECRAM type: {}", err)};
@@ -63,8 +66,8 @@ namespace AECRAM {
         // Read bytes and print.
         {
             struct ::aecram_request req = {
-                .offset   = ::detail::kUnknownOffset + offset,
-                .length   = length,
+                .offset   = static_cast<std::uint16_t>(::detail::kUnknownOffset + offset),
+                .length   = static_cast<std::uint8_t>(length),
                 .reserved = 0,
                 .buffer   = { 0 },
             };
