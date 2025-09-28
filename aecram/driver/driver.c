@@ -15,6 +15,7 @@
 #include <linux/ioctl.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
+#include <linux/miscdevice.h>
 #include <linux/moduleparam.h>
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -54,12 +55,10 @@ struct aecram_config {
 };
 
 struct aecram_data {
-	struct cdev dev;
+	struct miscdevice dev;
 	struct mutex mtx;
 
 	u8 buffer[AECRAM_BUFFER_SIZE];
-
-	int major;
 };
 
 struct aecram_session {
@@ -221,9 +220,13 @@ static int aecram_open(struct inode *inode, struct file *filp)
 	struct aecram_session *session;
 	struct aecram_data *d;
 
-	d = container_of(inode->i_cdev, struct aecram_data, dev);
+	/* misc_open sets filp->private_data to our misc device. */
+	d = container_of(filp->private_data, struct aecram_data, dev);
 
 	session = kzalloc(sizeof(*session), GFP_KERNEL);
+	if (session == NULL)
+		return -ENOMEM;
+
 	session->data = d;
 
 	filp->private_data = session;
@@ -337,28 +340,18 @@ static const struct file_operations aecram_fops = {
 
 static int __init aecram_init(void)
 {
-	dev_t devno;
 	int ret;
 
 	memset(&data, 0, sizeof(data));
 	mutex_init(&data.mtx);
 
-	ret = alloc_chrdev_region(&devno, 0, 1, driver_name);
+	data.dev.minor = MISC_DYNAMIC_MINOR;
+	data.dev.name = driver_name;
+	data.dev.fops = &aecram_fops;
+
+	ret = misc_register(&data.dev);
 	if (ret < 0) {
-		pr_err("aecram: failed to alloc chrdev: %d\n", ret);
-
-		return -ENOMEM;
-	}
-
-	data.major = MAJOR(devno);
-
-	cdev_init(&data.dev, &aecram_fops);
-
-	ret = cdev_add(&data.dev, devno, 1);
-	if (ret < 0) {
-		pr_err("aecram: failed to add cdev: %d\n", ret);
-
-		unregister_chrdev_region(MKDEV(data.major, 0), 1);
+		pr_err("aecram: failed to register device: %d\n", ret);
 
 		return -ENOMEM;
 	}
@@ -370,8 +363,11 @@ static int __init aecram_init(void)
 
 static void __exit aecram_exit(void)
 {
-	cdev_del(&data.dev);
-	unregister_chrdev_region(MKDEV(data.major, 0), 1);
+	mutex_lock(&data.mtx);
+	misc_deregister(&data.dev);
+	mutex_unlock(&data.mtx);
+
+	memset(&data, 0, sizeof(data));
 }
 
 module_init(aecram_init);
