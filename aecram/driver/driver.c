@@ -57,9 +57,15 @@ struct aecram_data {
 	struct cdev dev;
 	struct mutex mtx;
 
-	const struct aecram_config *config;
+	u8 buffer[AECRAM_BUFFER_SIZE];
 
 	int major;
+};
+
+struct aecram_session {
+	struct aecram_data *data;
+
+	const struct aecram_config *config;
 };
 
 /**
@@ -136,9 +142,8 @@ static u8 read_value(const struct aecram_config *cfg)
 	return cmd_in(cfg, &cmd);
 }
 
-static int aecram_write(struct aecram_data *d, u16 offset, u8 val)
+static int aecram_write(struct aecram_data *d, const struct aecram_config *cfg, u16 offset, u8 val)
 {
-	const struct aecram_config *cfg = d->config;
 	int ret;
 
 	ret = mutex_lock_interruptible(&d->mtx);
@@ -156,9 +161,8 @@ static int aecram_write(struct aecram_data *d, u16 offset, u8 val)
 	return 0;
 }
 
-static int aecram_read(struct aecram_data *d, u16 offset, u8 *val)
+static int aecram_read(struct aecram_data *d, const struct aecram_config *cfg, u16 offset, u8 *val)
 {
-	const struct aecram_config *cfg = d->config;
 	int ret;
 
 	ret = mutex_lock_interruptible(&d->mtx);
@@ -176,24 +180,24 @@ static int aecram_read(struct aecram_data *d, u16 offset, u8 *val)
 	return 0;
 }
 
-static int aecram_write_buffer(struct aecram_data *d, u16 offset, const u8 *buf, u16 length)
+static int aecram_write_buffer(struct aecram_data *d, const struct aecram_config *cfg, u16 offset, u16 length)
 {
 	int ret;
 
 	for (unsigned i = 0; i < length; ++i) {
-		ret = aecram_write(d, offset + i, buf[i]);
+		ret = aecram_write(d, cfg, offset + i, d->buffer[i]);
 		if (ret < 0)
 			return ret;
 	}
 	return 0;
 }
 
-static int aecram_read_buffer(struct aecram_data *d, u16 offset, u8 *buf, u16 length)
+static int aecram_read_buffer(struct aecram_data *d, const struct aecram_config *cfg, u16 offset, u16 length)
 {
 	int ret;
 
 	for (unsigned i = 0; i < length; ++i) {
-		ret = aecram_read(d, offset + i, &buf[i]);
+		ret = aecram_read(d, cfg, offset + i, &d->buffer[i]);
 		if (ret < 0)
 			return ret;
 	}
@@ -214,23 +218,45 @@ static bool is_valid_param(u16 offset, u8 length)
 
 static int aecram_open(struct inode *inode, struct file *filp)
 {
-	struct aecram_data *d = container_of(inode->i_cdev, struct aecram_data, dev);
+	struct aecram_session *session;
+	struct aecram_data *d;
 
-	filp->private_data = d;
+	d = container_of(inode->i_cdev, struct aecram_data, dev);
+
+	session = kzalloc(sizeof(*session), GFP_KERNEL);
+	session->data = d;
+
+	filp->private_data = session;
+
+	return 0;
+}
+
+static int aecram_close(struct inode *inode, struct file *filp)
+{
+	struct aecram_session *session;
+
+	session = filp->private_data;
+	filp->private_data = NULL;
+
+	kfree(session);
 
 	return 0;
 }
 
 static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-	struct aecram_data *d = filp->private_data;
+	struct aecram_session *session;
+	struct aecram_data *d;
 	int ret = 0;
+
+	session = filp->private_data;
+	d = session->data;
 
 	switch (cmd) {
 		case IOCTL_AECRAM_SET_TYPE:
 		{
 			if (arg == AECRAM_TYPE_AYANEO) {
-				d->config = &config_default;
+				session->config = &config_default;
 			} else {
 				ret = -EINVAL;
 			}
@@ -243,7 +269,7 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 			u16 offset;
 			u8 length;
 
-			if (d->config == NULL)
+			if (session->config == NULL)
 				return -ENODEV;
 
 			if (!access_ok(req, sizeof(struct aecram_request)))
@@ -256,11 +282,9 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 				return -EINVAL;
 
 			if (length != 0) {
-				u8 *buffer __free(kfree) = kzalloc(length, GFP_KERNEL);
-
-				ret = aecram_read_buffer(d, offset, buffer, length);
+				ret = aecram_read_buffer(d, session->config, offset, length);
 				if (ret == 0) {
-					if (__copy_to_user(req->buffer, buffer, length) != length)
+					if (__copy_to_user(req->buffer, d->buffer, length) != length)
 						ret = -EFAULT;
 				}
 			}
@@ -273,7 +297,7 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 			u16 offset;
 			u8 length;
 
-			if (d->config == NULL)
+			if (session->config == NULL)
 				return -ENODEV;
 
 			if (!access_ok(req, sizeof(struct aecram_request)))
@@ -286,12 +310,10 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 				return -EINVAL;
 
 			if (length != 0) {
-				u8 *buffer __free(kfree) = kzalloc(length, GFP_KERNEL);
-
-				if (__copy_from_user(buffer, req->buffer, length) != length) {
+				if (__copy_from_user(d->buffer, req->buffer, length) != length) {
 					ret = -EFAULT;
 				} else {
-					ret = aecram_write_buffer(d, offset, buffer, length);
+					ret = aecram_write_buffer(d, session->config, offset, length);
 				}
 			}
 		} break;
@@ -309,6 +331,7 @@ static long aecram_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned 
 static const struct file_operations aecram_fops = {
 	.owner = THIS_MODULE,
 	.open = aecram_open,
+	.release = aecram_close,
 	.unlocked_ioctl = aecram_unlocked_ioctl,
 };
 
